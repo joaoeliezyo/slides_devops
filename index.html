@@ -632,46 +632,84 @@
             <!-- TAB: COMANDOS -->
             <div class="ctab-panel" id="tab-comandos">
                 <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
-                    Estes são os <strong style="color:var(--text)">comandos CLI essenciais</strong> para orquestrar o ciclo de vida e a inspeção de containers no seu dia a dia. Leia os comentários explicativos acima de cada comando para compreender seu funcionamento.
+                    Estes são os <strong style="color:var(--text)">comandos CLI essenciais</strong> para orquestrar o ciclo de vida e a inspeção de containers. Deslize para explorar cada console em formato de slider.
                 </p>
-                <div class="compose-block" style="margin-top:1.5rem;">
-                    <div class="compose-bar">
-                        <div class="dot dot-red"></div>
-                        <div class="dot dot-yellow"></div>
-                        <div class="dot dot-green"></div>
-                        <span class="file-name">terminal — comandos essenciais comentados</span>
+                <div class="slider-wrapper reveal">
+                    <button class="slider-btn prev" onclick="moveSlider('comandos', -1)">←</button>
+                    <div class="slider-track-container" style="padding: 0.5rem 0;">
+                        <div class="slider-track" id="slider-track-comandos">
+
+                            <!-- TERMINAL 1: RUN -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">1/6: docker run — iniciar container</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-run"></div>
+                            </div>
+
+                            <!-- TERMINAL 2: PS -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">2/6: docker ps — listar ativos</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-ps"></div>
+                            </div>
+
+                            <!-- TERMINAL 3: LOGS -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">3/6: docker logs — acompanhar logs</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-logs"></div>
+                            </div>
+
+                            <!-- TERMINAL 4: EXEC -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">4/6: docker exec — terminal interativo</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-exec"></div>
+                            </div>
+
+                            <!-- TERMINAL 5: STATS -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">5/6: docker stats — consumo em tempo real</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-stats"></div>
+                            </div>
+
+                            <!-- TERMINAL 6: STOP & RM -->
+                            <div class="compose-block">
+                                <div class="compose-bar">
+                                    <div class="dot dot-red"></div>
+                                    <div class="dot dot-yellow"></div>
+                                    <div class="dot dot-green"></div>
+                                    <span class="file-name">6/6: docker stop & rm — parar e deletar</span>
+                                </div>
+                                <div class="compose-body" style="font-size:0.8rem; line-height:2.0;" data-code-id="cmd-stop"></div>
+                            </div>
+
+                        </div>
                     </div>
-                    <div class="compose-body" style="font-size:0.8rem; line-height:2.0;">
-                        <span class="cy-com"># docker run: Cria e inicia um novo container a partir de uma imagem.
-# -d: Roda em modo background ('detached'), liberando o terminal.
-# -p 3000:3000: Mapeia a porta 3000 do host para a porta 3000 interna do container.
-# --name minha-api: Dá um nome amigável e único para identificação do container.</span>
-                        <span style="color:#79c0ff">$</span> docker run -d -p <span
-                            style="color:#ffa657">3000</span>:<span style="color:#ffa657">3000</span> --name minha-api meu-app
-
-                        <span class="cy-com"># docker ps: Lista todos os containers ativos no momento.
-# Dica: Adicione o parâmetro '-a' (docker ps -a) para exibir também os containers inativos/parados.</span>
-                        <span style="color:#79c0ff">$</span> docker ps
-
-                        <span class="cy-com"># docker logs: Exibe a saída padrão de log (console.log / logs da aplicação).
-# -f: Modo 'follow' (acompanha e atualiza as novas linhas em tempo real no console).</span>
-                        <span style="color:#79c0ff">$</span> docker logs -f minha-api
-
-                        <span class="cy-com"># docker exec: Executa um comando específico dentro de um container que já está ativo.
-# -it: Roda em modo interativo atrelando um pseudo-TTY (essencial para shells interativos).
-# sh: Abre o shell simplificado Alpine Linux (ou use 'bash' se estiver disponível na imagem).</span>
-                        <span style="color:#79c0ff">$</span> docker exec -it minha-api sh
-
-                        <span class="cy-com"># docker stats: Exibe uma transmissão ao vivo com consumo de recursos de hardware.
-# Mostra porcentagem de CPU, memória utilizada, limites, tráfego de rede e I/O de disco.</span>
-                        <span style="color:#79c0ff">$</span> docker stats minha-api
-
-                        <span class="cy-com"># docker stop: Envia um sinal amigável SIGTERM e, após um tempo limite, SIGKILL para desligar o container.
-# docker rm: Deleta o container do disco e exclui sua camada temporária gravável (Read-Write).</span>
-                        <span style="color:#79c0ff">$</span> docker stop minha-api <span
-                            class="cy-com">&amp;&amp;</span> docker rm minha-api
-                    </div>
+                    <button class="slider-btn next" onclick="moveSlider('comandos', 1)">→</button>
                 </div>
+                <div class="slider-dots reveal" id="slider-dots-comandos"></div>
             </div>
 
 
@@ -1138,10 +1176,12 @@
         const sliders = {
             conteinerizacao: { currentIdx: 0, total: 6 },
             vantagens: { currentIdx: 0, total: 6 },
-            ecossistema: { currentIdx: 0, total: 6 }
+            ecossistema: { currentIdx: 0, total: 6 },
+            comandos: { currentIdx: 0, total: 6 }
         };
 
         function getVisibleCards(sectionId) {
+            if (sectionId === 'comandos') return 1;
             const width = window.innerWidth;
             if (width <= 768) return 1;
             if (width <= 1024) return 2;
@@ -1167,8 +1207,8 @@
             track.style.transform = `translateX(-${offset}px)`;
 
             // Update buttons
-            const prevBtn = document.querySelector(`#${sectionId} .slider-btn.prev`);
-            const nextBtn = document.querySelector(`#${sectionId} .slider-btn.next`);
+            const prevBtn = document.querySelector(`#${sectionId} .slider-btn.prev`) || document.querySelector(`#tab-${sectionId} .slider-btn.prev`);
+            const nextBtn = document.querySelector(`#${sectionId} .slider-btn.next`) || document.querySelector(`#tab-${sectionId} .slider-btn.next`);
             if (prevBtn) prevBtn.disabled = sliders[sectionId].currentIdx === 0;
             if (nextBtn) nextBtn.disabled = sliders[sectionId].currentIdx >= maxIdx;
 
@@ -1207,6 +1247,7 @@
             updateSlider('conteinerizacao');
             updateSlider('vantagens');
             updateSlider('ecossistema');
+            updateSlider('comandos');
         });
 
         /* ─────────────────────────────────────────
@@ -1373,6 +1414,9 @@
                     t.classList.add('active');
                 }
             });
+            if (name === 'comandos') {
+                updateSlider('comandos');
+            }
         }
 
         /* ─────────────────────────────────────────

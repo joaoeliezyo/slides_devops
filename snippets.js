@@ -81,7 +81,34 @@ docker run \\
 git log --oneline
 a3f2b1c fix: atualiza Node 20→22
 7d9e4f0 feat: adiciona serviço Redis
-2c8a1b3 chore: reduz imagem (multi-stage)`
+2c8a1b3 chore: reduz imagem (multi-stage)`,
+
+  "cmd-run": `# docker run: Cria e inicia um novo container a partir de uma imagem.
+# -d: Roda em modo background ('detached'), liberando o terminal.
+# -p 3000:3000: Mapeia a porta 3000 do host para a porta 3000 interna do container.
+# --name minha-api: Dá um nome amigável e único para identificação do container.
+$ docker run -d -p 3000:3000 --name minha-api meu-app`,
+
+  "cmd-ps": `# docker ps: Lista todos os containers ativos no momento.
+# Dica: Adicione o parâmetro '-a' (docker ps -a) para exibir também os containers inativos/parados.
+$ docker ps`,
+
+  "cmd-logs": `# docker logs: Exibe a saída padrão de log (console.log / logs da aplicação).
+# -f: Modo 'follow' (acompanha e atualiza as novas linhas em tempo real no console).
+$ docker logs -f minha-api`,
+
+  "cmd-exec": `# docker exec: Executa um comando específico dentro de um container que já está ativo.
+# -it: Roda em modo interativo atrelando um pseudo-TTY (essencial para shells interativos).
+# sh: Abre o shell simplificado Alpine Linux (ou use 'bash' se estiver disponível na imagem).
+$ docker exec -it minha-api sh`,
+
+  "cmd-stats": `# docker stats: Exibe uma transmissão ao vivo com consumo de recursos de hardware.
+# Mostra porcentagem de CPU, memória utilizada, limites, tráfego de rede e I/O de disco.
+$ docker stats minha-api`,
+
+  "cmd-stop": `# docker stop: Envia um sinal amigável SIGTERM e, após um tempo limite, SIGKILL para desligar o container.
+# docker rm: Deleta o container do disco e exclui sua camada temporária gravável (Read-Write).
+$ docker stop minha-api && docker rm minha-api`
 };
 
 function loadCodeSnippets() {

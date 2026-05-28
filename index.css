@@ -453,6 +453,13 @@
             min-width: 280px;
         }
 
+        .slider-track .compose-block {
+            flex: 0 0 100%;
+            min-width: 100%;
+            margin-bottom: 0;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
         @media (max-width: 1024px) {
 
             .slider-track .card,
