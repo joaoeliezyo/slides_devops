@@ -51,7 +51,7 @@ A aplicação foi criada sob o princípio de **overhead zero**, eliminando a nec
 Como o projeto é estático e independente, você pode executá-lo de três formas muito simples:
 
 ### 1. Abertura Direta
-Basta dar um duplo clique no arquivo `INDEX.html` para abri-lo diretamente em qualquer navegador moderno.
+Basta dar um duplo clique no arquivo `index.html` para abri-lo diretamente em qualquer navegador moderno.
 
 ### 2. Usando Servidor HTTP Local (Recomendado)
 Para melhor carregamento de imagens locais e tratamento de rotas hash no histórico do navegador, inicie um servidor web a partir da raiz do projeto:
@@ -60,7 +60,7 @@ Para melhor carregamento de imagens locais e tratamento de rotas hash no histór
 ```bash
 python -m http.server 8000
 ```
-*Acesse em: `http://localhost:8000/INDEX.html`*
+*Acesse em: `http://localhost:8000/index.html`*
 
 **Usando Node.js (se possuir o npm):**
 ```bash
@@ -69,7 +69,7 @@ npx serve .
 *Acesse no endereço fornecido pelo terminal.*
 
 **Usando VS Code Extension:**
-- Clique com o botão direito em `INDEX.html` e selecione **Open with Live Server**.
+- Clique com o botão direito em `index.html` e selecione **Open with Live Server**.
 
 ---
 
@@ -77,9 +77,10 @@ npx serve .
 
 ```text
 slides_devops/
-├── INDEX.html           # A aplicação principal (HTML, CSS e JS do Deck)
-├── snippets.js          # Trechos de código externalizados para melhor formatação
-├── README.md            # Documentação do projeto (este arquivo)
+├── index.html           # Estrutura HTML e lógica de transições de slides
+├── index.css            # Estilização CSS externa e design visual retro-cyberpunk
+├── snippets.js          # Trechos de código de exemplos carregados dinamicamente
+├── readme.md            # Documentação do projeto (este arquivo)
 ├── docker_nobg.png      # Logo estilizada da baleia Docker (Hero)
 ├── favicon.ico          # Favicon gerado a partir da imagem do logotipo
 └── container_vs_vm.jpg  # Ilustração comparativa de VM vs Container
