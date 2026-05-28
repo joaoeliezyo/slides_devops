@@ -2303,11 +2303,11 @@
       <a href="#conteinerizacao">Contêineres</a>
       <a href="#vmvscontainer">VM vs Container</a>
       <a href="#oquedocker">Docker</a>
+      <a href="#conceitos">Conceitos</a>
       <a href="#linhadotempo">Linha do Tempo</a>
       <a href="#ecossistema">Ecossistema</a>
       <a href="#vantagens">Vantagens</a>
       <a href="#exemplocompose">Compose</a>
-      <a href="#conceitos">Conceitos</a>
       <a href="#lab">Lab</a>
       <a href="#challenge">Desafio</a>
     </div>
@@ -2578,6 +2578,288 @@
 
   <div class="divider"></div>
 
+  <!-- ═══════════════ SLIDE 5: CONCEITOS BÁSICOS ═══════════════ -->
+  <section id="conceitos">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">man
+          docker-concepts</span></p>
+      <h2 class="reveal">Conceitos <span class="text-cyan">Básicos</span></h2>
+      <p class="section-desc reveal">Três conceitos fundamentais formam a base de todo workflow Docker. Clique nas abas
+        para explorar cada um em profundidade.</p>
+
+      <div class="concepts-tabs reveal">
+        <button class="ctab active" onclick="switchTab('dockerfile')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>Dockerfile</button>
+        <button class="ctab" onclick="switchTab('imagem')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+          </svg>Imagem</button>
+        <button class="ctab" onclick="switchTab('container')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+            <line x1="6" y1="5" x2="6" y2="19" />
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="18" y1="5" x2="18" y2="19" />
+          </svg>Container</button>
+      </div>
+
+      <!-- TAB: DOCKERFILE -->
+      <div class="ctab-panel active reveal" id="tab-dockerfile">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          O Dockerfile é a <strong style="color:var(--text)">receita</strong> da sua imagem — um arquivo de texto com
+          instruções sequenciais. Cada instrução cria uma nova <strong style="color:var(--cyan)">camada</strong> na
+          imagem. Clique em uma linha para ver a explicação.
+        </p>
+        <div class="dockerfile-annotated">
+          <div class="df-lines">
+            <span>1</span><span>2</span><span>3</span><span>4</span>
+            <span>5</span><span>6</span><span>7</span><span>8</span>
+            <span>9</span><span>10</span><span>11</span><span>12</span>
+          </div>
+          <div class="df-code-area">
+            <div class="df-code">
+              <div class="df-line" onclick="annotate(0)">
+                <span class="df-comment"># Dockerfile — Aplicação Node.js</span>
+              </div>
+              <div class="df-line" onclick="annotate(1)">
+                <span class="df-instr">FROM</span>&nbsp;<span class="df-arg">node:20-alpine</span>
+              </div>
+              <div class="df-line" onclick="annotate(2)" style="margin-top:0.4rem">
+                <span class="df-instr">WORKDIR</span>&nbsp;<span class="df-arg">/app</span>
+              </div>
+              <div class="df-line" onclick="annotate(3)" style="margin-top:0.4rem">
+                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">package*.json ./</span>
+              </div>
+              <div class="df-line" onclick="annotate(4)">
+                <span class="df-instr">RUN</span>&nbsp;<span class="df-arg">npm ci --only=production</span>
+              </div>
+              <div class="df-line" onclick="annotate(5)" style="margin-top:0.4rem">
+                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">. .</span>
+              </div>
+              <div class="df-line" onclick="annotate(6)" style="margin-top:0.4rem">
+                <span class="df-instr">EXPOSE</span>&nbsp;<span class="df-arg">3000</span>
+              </div>
+              <div class="df-line" onclick="annotate(7)" style="margin-top:0.4rem">
+                <span class="df-instr">CMD</span>&nbsp;<span class="df-arg">["node", "server.js"]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="df-annotation" id="df-ann"></div>
+        <div
+          style="margin-top:1.5rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path
+                  d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                <line x1="9" y1="18" x2="15" y2="18" />
+                <line x1="10" y1="22" x2="14" y2="22" />
+              </svg></span>
+            <div>
+              <div class="pn">Ordem importa</div>
+              <div class="pt">Instruções menos mutáveis no topo preservam cache de build</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg></span>
+            <div>
+              <div class="pn">Cache por camada</div>
+              <div class="pt">Se uma instrução não mudou, Docker reutiliza a camada em cache</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <line x1="2" y1="22" x2="22" y2="22" />
+                <line x1="5" y1="22" x2="5" y2="2" />
+                <line x1="5" y1="5" x2="22" y2="5" />
+                <line x1="18" y1="5" x2="18" y2="12" />
+                <circle cx="18" cy="14" r="2" />
+              </svg></span>
+            <div>
+              <div class="pn">Multi-stage builds</div>
+              <div class="pt">Use FROM múltiplos para imagens de prod menores e mais seguras</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: IMAGEM -->
+      <div class="ctab-panel" id="tab-imagem">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          Enquanto o Dockerfile é a receita de construção, a <strong style="color:var(--text)">Imagem é o pacote imutável compilado</strong>.
+          Ela materializa na prática o conceito de <strong style="color:var(--cyan)">camadas sobrepostas do UnionFS</strong> apresentadas no início. Cada
+          instrução do Dockerfile gera uma camada de leitura estática (Read-Only) identificada por um hash único. A camada temporária gravável
+          (Read-Write) só é criada quando o container é de fato executado.
+        </p>
+        <div class="layers-visual">
+          <div class="img-layer il-rw">
+            <span class="il-label"><svg class="retro-icon" style="width:0.8em; height:0.8em; margin-right:6px;"
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+              </svg>Camada R/W do Container</span>
+            <span class="il-badge rw">READ-WRITE</span>
+          </div>
+          <div class="img-layer il-cmd" data-tip="CMD node server.js">
+            <span class="il-label">CMD node server.js</span>
+            <span class="il-size">+1 KB</span>
+          </div>
+          <div class="img-layer il-npm" data-tip="RUN npm ci — instala dependências">
+            <span class="il-label">RUN npm ci</span>
+            <span class="il-size">+48 MB</span>
+          </div>
+          <div class="img-layer il-copy" data-tip="COPY . . — copia código fonte">
+            <span class="il-label">COPY . .</span>
+            <span class="il-size">+2 MB</span>
+          </div>
+          <div class="img-layer il-wdir" data-tip="WORKDIR /app — cria diretório de trabalho">
+            <span class="il-label">WORKDIR /app</span>
+            <span class="il-size">+1 KB</span>
+          </div>
+          <div class="img-layer il-base" data-tip="FROM node:20-alpine — imagem base (já cacheada)">
+            <span class="il-label">FROM node:20-alpine</span>
+            <span class="il-size">+7 MB</span>
+          </div>
+        </div>
+        <div class="cow-note">
+          <svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px; color:var(--yellow); filter:drop-shadow(0 0 4px var(--yellow));"
+            viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg><strong>Copy-on-Write (CoW):</strong> Quando um container tenta modificar um arquivo das camadas de
+          leitura
+          da imagem, o Docker copia <em>apenas esse arquivo</em> para a camada R/W antes de editá-lo. As camadas
+          originais da imagem nunca são alteradas — por isso múltiplos containers podem compartilhar a mesma imagem sem
+          conflito.
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg></span>
+            <div>
+              <div class="pn">Imutável</div>
+              <div class="pt">Camadas da imagem nunca mudam após o build</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+              </svg></span>
+            <div>
+              <div class="pn">Compartilhada</div>
+              <div class="pt">100 containers podem usar 1 imagem. Zero duplicação.</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg></span>
+            <div>
+              <div class="pn">Versionada por tag</div>
+              <div class="pt">meu-app:v1.0, meu-app:latest, meu-app:sha-a3f2b1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CONTAINER -->
+      <div class="ctab-panel" id="tab-container">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          Um container é a <strong style="color:var(--text)">instância ativa e isolada</strong> de uma imagem.
+          Sob o capô, ele é apenas um processo comum rodando diretamente no kernel host, mas blindado via
+          <strong style="color:var(--cyan)">Namespaces</strong> e com limites rígidos definidos por
+          <strong style="color:var(--cyan)">cgroups</strong> (as primitivas explicadas no primeiro slide). Você pode instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada gravável isolada.
+        </p>
+        <div class="container-lifecycle reveal">
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+              </svg></div>
+            <div class="ls-name">Created</div>
+            <div class="ls-cmd">docker create</div>
+            <div class="ls-desc">Container criado, ainda não iniciado. Camada R/W alocada.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg></div>
+            <div class="ls-name">Running</div>
+            <div class="ls-cmd">docker start / run</div>
+            <div class="ls-desc">Processo em execução. Consome CPU e memória do host.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg></div>
+            <div class="ls-name">Paused</div>
+            <div class="ls-cmd">docker pause</div>
+            <div class="ls-desc">Processos congelados via SIGSTOP. Memória preservada.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+              </svg></div>
+            <div class="ls-name">Stopped</div>
+            <div class="ls-cmd">docker stop</div>
+            <div class="ls-desc">SIGTERM → grace period → SIGKILL. Container parado mas existe.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg></div>
+            <div class="ls-name">Removed</div>
+            <div class="ls-cmd">docker rm</div>
+            <div class="ls-desc">Container deletado. Camada R/W destruída. Use volumes para persistir dados.</div>
+          </div>
+        </div>
+        <div class="compose-block" style="margin-top:1.5rem;">
+          <div class="compose-bar">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+            <span class="file-name">terminal — comandos essenciais</span>
+          </div>
+          <div class="compose-body" style="font-size:0.8rem;">
+            <span class="cy-com"># Criar e iniciar container (tudo em um)</span>
+            <span style="color:#79c0ff">$</span> docker run -d -p <span style="color:#ffa657">3000</span>:<span
+              style="color:#ffa657">3000</span> --name minha-api meu-app
+
+            <span class="cy-com"># Listar containers rodando</span>
+            <span style="color:#79c0ff">$</span> docker ps
+
+            <span class="cy-com"># Ver logs em tempo real</span>
+            <span style="color:#79c0ff">$</span> docker logs -f minha-api
+
+            <span class="cy-com"># Entrar no container (shell interativo)</span>
+            <span style="color:#79c0ff">$</span> docker exec -it minha-api sh
+
+            <span class="cy-com"># Inspecionar uso de recursos</span>
+            <span style="color:#79c0ff">$</span> docker stats minha-api
+
+            <span class="cy-com"># Parar e remover</span>
+            <span style="color:#79c0ff">$</span> docker stop minha-api <span class="cy-com">&amp;&amp;</span> docker rm
+            minha-api
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <!-- ═══════════════ SLIDE 3B: LINHA DO TEMPO ═══════════════ -->
   <section id="linhadotempo">
     <div class="section-wrapper" style="max-width: 1000px;">
@@ -2662,10 +2944,11 @@
               <div class="en-title">Docker CLI</div>
               <div class="en-sub">Interface de linha de comando. O que você digita no terminal. Envia comandos para o
                 Daemon via socket Unix.</div>
-              <div class="en-code">$ docker build -t meu-app .
-                $ docker run -p 3000:3000 meu-app
-                $ docker ps
-                $ docker logs &lt;container-id&gt;</div>
+              <div class="en-code"># O ponto de entrada para orquestrar:
+                $ docker system info
+                $ docker network ls
+                $ docker volume ls
+                $ docker compose up -d</div>
             </div>
 
             <div class="eco-node highlighted">
@@ -2934,288 +3217,6 @@
 
   <div class="divider"></div>
 
-  <!-- ═══════════════ SLIDE 5: CONCEITOS BÁSICOS ═══════════════ -->
-  <section id="conceitos">
-    <div class="section-wrapper">
-      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">man
-          docker-concepts</span></p>
-      <h2 class="reveal">Conceitos <span class="text-cyan">Básicos</span></h2>
-      <p class="section-desc reveal">Três conceitos fundamentais formam a base de todo workflow Docker. Clique nas abas
-        para explorar cada um em profundidade.</p>
-
-      <div class="concepts-tabs reveal">
-        <button class="ctab active" onclick="switchTab('dockerfile')"><svg class="retro-icon"
-            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>Dockerfile</button>
-        <button class="ctab" onclick="switchTab('imagem')"><svg class="retro-icon"
-            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
-            <path
-              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-            <line x1="12" y1="22.08" x2="12" y2="12" />
-          </svg>Imagem</button>
-        <button class="ctab" onclick="switchTab('container')"><svg class="retro-icon"
-            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
-            <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
-            <line x1="6" y1="5" x2="6" y2="19" />
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="18" y1="5" x2="18" y2="19" />
-          </svg>Container</button>
-      </div>
-
-      <!-- TAB: DOCKERFILE -->
-      <div class="ctab-panel active reveal" id="tab-dockerfile">
-        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
-          O Dockerfile é a <strong style="color:var(--text)">receita</strong> da sua imagem — um arquivo de texto com
-          instruções sequenciais. Cada instrução cria uma nova <strong style="color:var(--cyan)">camada</strong> na
-          imagem. Clique em uma linha para ver a explicação.
-        </p>
-        <div class="dockerfile-annotated">
-          <div class="df-lines">
-            <span>1</span><span>2</span><span>3</span><span>4</span>
-            <span>5</span><span>6</span><span>7</span><span>8</span>
-            <span>9</span><span>10</span><span>11</span><span>12</span>
-          </div>
-          <div class="df-code-area">
-            <div class="df-code">
-              <div class="df-line" onclick="annotate(0)">
-                <span class="df-comment"># Dockerfile — Aplicação Node.js</span>
-              </div>
-              <div class="df-line" onclick="annotate(1)">
-                <span class="df-instr">FROM</span>&nbsp;<span class="df-arg">node:20-alpine</span>
-              </div>
-              <div class="df-line" onclick="annotate(2)" style="margin-top:0.4rem">
-                <span class="df-instr">WORKDIR</span>&nbsp;<span class="df-arg">/app</span>
-              </div>
-              <div class="df-line" onclick="annotate(3)" style="margin-top:0.4rem">
-                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">package*.json ./</span>
-              </div>
-              <div class="df-line" onclick="annotate(4)">
-                <span class="df-instr">RUN</span>&nbsp;<span class="df-arg">npm ci --only=production</span>
-              </div>
-              <div class="df-line" onclick="annotate(5)" style="margin-top:0.4rem">
-                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">. .</span>
-              </div>
-              <div class="df-line" onclick="annotate(6)" style="margin-top:0.4rem">
-                <span class="df-instr">EXPOSE</span>&nbsp;<span class="df-arg">3000</span>
-              </div>
-              <div class="df-line" onclick="annotate(7)" style="margin-top:0.4rem">
-                <span class="df-instr">CMD</span>&nbsp;<span class="df-arg">["node", "server.js"]</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="df-annotation" id="df-ann"></div>
-        <div
-          style="margin-top:1.5rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <path
-                  d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
-                <line x1="9" y1="18" x2="15" y2="18" />
-                <line x1="10" y1="22" x2="14" y2="22" />
-              </svg></span>
-            <div>
-              <div class="pn">Ordem importa</div>
-              <div class="pt">Instruções menos mutáveis no topo preservam cache de build</div>
-            </div>
-          </div>
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-              </svg></span>
-            <div>
-              <div class="pn">Cache por camada</div>
-              <div class="pt">Se uma instrução não mudou, Docker reutiliza a camada em cache</div>
-            </div>
-          </div>
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <line x1="2" y1="22" x2="22" y2="22" />
-                <line x1="5" y1="22" x2="5" y2="2" />
-                <line x1="5" y1="5" x2="22" y2="5" />
-                <line x1="18" y1="5" x2="18" y2="12" />
-                <circle cx="18" cy="14" r="2" />
-              </svg></span>
-            <div>
-              <div class="pn">Multi-stage builds</div>
-              <div class="pt">Use FROM múltiplos para imagens de prod menores e mais seguras</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: IMAGEM -->
-      <div class="ctab-panel" id="tab-imagem">
-        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
-          Uma imagem é um <strong style="color:var(--text)">pacote imutável e estático</strong> gerado pelo <code
-            style="color:var(--cyan); background:var(--surface); padding:0.1rem 0.4rem; border-radius:4px">docker build</code>.
-          Ela é composta de <strong style="color:var(--cyan)">camadas sobrepostas</strong> (UnionFS), onde cada
-          instrução do Dockerfile gera uma camada. Apenas a camada superior (Read-Write) é mutável — e só existe
-          enquanto o container está rodando.
-        </p>
-        <div class="layers-visual">
-          <div class="img-layer il-rw">
-            <span class="il-label"><svg class="retro-icon" style="width:0.8em; height:0.8em; margin-right:6px;"
-                viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-              </svg>Camada R/W do Container</span>
-            <span class="il-badge rw">READ-WRITE</span>
-          </div>
-          <div class="img-layer il-cmd" data-tip="CMD node server.js">
-            <span class="il-label">CMD node server.js</span>
-            <span class="il-size">+1 KB</span>
-          </div>
-          <div class="img-layer il-npm" data-tip="RUN npm ci — instala dependências">
-            <span class="il-label">RUN npm ci</span>
-            <span class="il-size">+48 MB</span>
-          </div>
-          <div class="img-layer il-copy" data-tip="COPY . . — copia código fonte">
-            <span class="il-label">COPY . .</span>
-            <span class="il-size">+2 MB</span>
-          </div>
-          <div class="img-layer il-wdir" data-tip="WORKDIR /app — cria diretório de trabalho">
-            <span class="il-label">WORKDIR /app</span>
-            <span class="il-size">+1 KB</span>
-          </div>
-          <div class="img-layer il-base" data-tip="FROM node:20-alpine — imagem base (já cacheada)">
-            <span class="il-label">FROM node:20-alpine</span>
-            <span class="il-size">+7 MB</span>
-          </div>
-        </div>
-        <div class="cow-note">
-          <svg class="retro-icon"
-            style="width:1.1em; height:1.1em; margin-right:6px; color:var(--yellow); filter:drop-shadow(0 0 4px var(--yellow));"
-            viewBox="0 0 24 24">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg><strong>Copy-on-Write (CoW):</strong> Quando um container tenta modificar um arquivo das camadas de
-          leitura
-          da imagem, o Docker copia <em>apenas esse arquivo</em> para a camada R/W antes de editá-lo. As camadas
-          originais da imagem nunca são alteradas — por isso múltiplos containers podem compartilhar a mesma imagem sem
-          conflito.
-        </div>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg></span>
-            <div>
-              <div class="pn">Imutável</div>
-              <div class="pt">Camadas da imagem nunca mudam após o build</div>
-            </div>
-          </div>
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-              </svg></span>
-            <div>
-              <div class="pn">Compartilhada</div>
-              <div class="pt">100 containers podem usar 1 imagem. Zero duplicação.</div>
-            </div>
-          </div>
-          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                <line x1="7" y1="7" x2="7.01" y2="7" />
-              </svg></span>
-            <div>
-              <div class="pn">Versionada por tag</div>
-              <div class="pt">meu-app:v1.0, meu-app:latest, meu-app:sha-a3f2b1</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: CONTAINER -->
-      <div class="ctab-panel" id="tab-container">
-        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
-          Um container é uma <strong style="color:var(--text)">instância em execução</strong> de uma imagem. Se a imagem
-          é a classe, o container é o objeto. Você pode criar dezenas de containers da mesma imagem simultaneamente —
-          cada um com seu próprio ciclo de vida.
-        </p>
-        <div class="container-lifecycle reveal">
-          <div class="lc-state">
-            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-              </svg></div>
-            <div class="ls-name">Created</div>
-            <div class="ls-cmd">docker create</div>
-            <div class="ls-desc">Container criado, ainda não iniciado. Camada R/W alocada.</div>
-          </div>
-          <div class="lc-state">
-            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg></div>
-            <div class="ls-name">Running</div>
-            <div class="ls-cmd">docker start / run</div>
-            <div class="ls-desc">Processo em execução. Consome CPU e memória do host.</div>
-          </div>
-          <div class="lc-state">
-            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
-              </svg></div>
-            <div class="ls-name">Paused</div>
-            <div class="ls-cmd">docker pause</div>
-            <div class="ls-desc">Processos congelados via SIGSTOP. Memória preservada.</div>
-          </div>
-          <div class="lc-state">
-            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-              </svg></div>
-            <div class="ls-name">Stopped</div>
-            <div class="ls-cmd">docker stop</div>
-            <div class="ls-desc">SIGTERM → grace period → SIGKILL. Container parado mas existe.</div>
-          </div>
-          <div class="lc-state">
-            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg></div>
-            <div class="ls-name">Removed</div>
-            <div class="ls-cmd">docker rm</div>
-            <div class="ls-desc">Container deletado. Camada R/W destruída. Use volumes para persistir dados.</div>
-          </div>
-        </div>
-        <div class="compose-block" style="margin-top:1.5rem;">
-          <div class="compose-bar">
-            <div class="dot dot-red"></div>
-            <div class="dot dot-yellow"></div>
-            <div class="dot dot-green"></div>
-            <span class="file-name">terminal — comandos essenciais</span>
-          </div>
-          <div class="compose-body" style="font-size:0.8rem;">
-            <span class="cy-com"># Criar e iniciar container (tudo em um)</span>
-            <span style="color:#79c0ff">$</span> docker run -d -p <span style="color:#ffa657">3000</span>:<span
-              style="color:#ffa657">3000</span> --name minha-api meu-app
-
-            <span class="cy-com"># Listar containers rodando</span>
-            <span style="color:#79c0ff">$</span> docker ps
-
-            <span class="cy-com"># Ver logs em tempo real</span>
-            <span style="color:#79c0ff">$</span> docker logs -f minha-api
-
-            <span class="cy-com"># Entrar no container (shell interativo)</span>
-            <span style="color:#79c0ff">$</span> docker exec -it minha-api sh
-
-            <span class="cy-com"># Inspecionar uso de recursos</span>
-            <span style="color:#79c0ff">$</span> docker stats minha-api
-
-            <span class="cy-com"># Parar e remover</span>
-            <span style="color:#79c0ff">$</span> docker stop minha-api <span class="cy-com">&amp;&amp;</span> docker rm
-            minha-api
-          </div>
-        </div>
-      </div>
-
-
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
   <!-- ═══════════════ LABORATÓRIO ═══════════════ -->
   <section id="lab">
     <div class="section-wrapper">
@@ -3254,40 +3255,28 @@
   <!-- ═══════════════ DESAFIO ═══════════════ -->
   <section id="challenge">
     <div class="section-wrapper">
-      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">node quiz.js
-          --hard-mode</span></p>
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">curl -s
+          https://harlem888.github.io/Docker-game/ | bash</span></p>
       <h2 class="reveal">O Desafio do <span class="text-yellow">Arquiteto</span> <svg class="retro-icon"
           style="width:1.1em; height:1.1em; margin-left:6px; color:var(--yellow); filter:drop-shadow(0 0 4px var(--yellow));"
           viewBox="0 0 24 24">
           <path
             d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
         </svg></h2>
-      <p class="section-desc reveal">Prove que você dominou o Docker! Responda as 5 perguntas abaixo para conquistar seu
-        certificado.</p>
+      <p class="section-desc reveal">Você está pronto para o teste real? O simulador local foi apenas o aquecimento. Clique no botão abaixo para iniciar o Docker Game oficial e testar suas habilidades ao limite!</p>
 
-      <div class="quiz-card reveal" id="quizCard">
-
-        <div class="quiz-progress" id="quizProgress"></div>
-
-        <div id="quizContent">
-          <div class="quiz-q" id="quizQ"></div>
-          <div class="quiz-opts" id="quizOpts"></div>
-          <div class="quiz-feedback" id="quizFeedback"></div>
-          <button class="btn btn-primary" id="quizNext" onclick="nextQ()" style="display:none">Próxima →</button>
-        </div>
-
-        <div class="quiz-score" id="quizScore">
-          <div class="score-number" id="scoreNum"></div>
-          <div class="score-label">de 5 questões corretas</div>
-          <span class="score-emoji" id="scoreEmoji"></span>
-          <p style="color:var(--muted);margin-top:1rem;font-size:0.9rem" id="scoreMsg"></p>
-          <button class="btn btn-primary mt-2" onclick="restartQuiz()"><svg class="retro-icon"
-              style="width:1.1em; height:1.1em; margin-right:6px; color:#000; filter:none; stroke-width:3.5;"
-              viewBox="0 0 24 24">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-            </svg>Tentar Novamente</button>
-        </div>
-
+      <div class="quiz-card reveal" style="text-align: center; max-width: 600px; margin: 0 auto; padding: 3rem 2rem;">
+        <span style="font-size: 4rem; display: block; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite;">🎮</span>
+        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text);">DOCKER GAME [LEVEL 99]</h3>
+        <p style="color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem;">
+          Um labirinto interativo de desafios Docker projetado para testar seus conhecimentos técnicos ao limite sob pressão de bugs e ambientes reais.
+        </p>
+        <a href="https://harlem888.github.io/Docker-game/" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 1rem; padding: 1rem 2.5rem; text-decoration: none;">
+          <svg class="retro-icon" style="width: 1.2em; height: 1.2em; color: #000; filter: none; stroke-width: 2.5;" viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          INICIAR DESAFIO EXTERNO
+        </a>
       </div>
     </div>
   </section>
@@ -3420,7 +3409,7 @@
     /* ─────────────────────────────────────────
        SLIDE-DECK Presentation Engine (SPA)
     ───────────────────────────────────────── */
-    const SECTIONS = ['hero', 'conteinerizacao', 'vmvscontainer', 'oquedocker', 'linhadotempo', 'ecossistema', 'vantagens', 'exemplocompose', 'conceitos', 'lab', 'challenge'];
+    const SECTIONS = ['hero', 'conteinerizacao', 'vmvscontainer', 'oquedocker', 'conceitos', 'linhadotempo', 'ecossistema', 'vantagens', 'exemplocompose', 'lab', 'challenge'];
     let activeSectionIndex = 0;
     let isTransitioning = false;
 
@@ -3726,158 +3715,8 @@
     // Helper sleep is already defined in the slide-deck engine above
 
     /* ─────────────────────────────────────────
-       QUIZ
+       CHALLENGE — Moved to external Docker Game
     ───────────────────────────────────────── */
-    const QUESTIONS = [
-      {
-        q: 'Sob o capô, quais primitivas do kernel Linux o Docker utiliza primariamente para isolamento de processos e limitação de recursos, respectivamente?',
-        opts: [
-          'chroot e seccomp',
-          'namespaces e cgroups (control groups)',
-          'systemd e iptables',
-          'AppArmor e eBPF'
-        ],
-        ans: 1,
-        ok: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--green); filter:drop-shadow(0 0 4px var(--green));" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Excelente! O Docker usa namespaces para isolar o que um processo pode ver (PID, NET, MNT, IPC, UTS, USER) e cgroups para limitar o que ele pode consumir (CPU, Memória, I/O).',
-        fail: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorreto. O isolamento de espaço de nomes é feito por namespaces e a restrição de recursos por cgroups.'
-      },
-      {
-        q: 'Como funciona o sistema de arquivos em camadas (UnionFS/Overlay2) quando um processo dentro do container tenta modificar um arquivo existente na imagem base?',
-        opts: [
-          'O arquivo original na imagem base é modificado diretamente in-place.',
-          'O Docker faz uma cópia imediata de toda a imagem base para o container.',
-          'Ocorre uma operação Copy-on-Write (CoW), copiando apenas o arquivo para a camada gravável do container antes de editá-lo.',
-          'O arquivo é bloqueado e a gravação falha com erro Read-Only File System.'
-        ],
-        ans: 2,
-        ok: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--green); filter:drop-shadow(0 0 4px var(--green));" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Perfeito! Pelo mecanismo de Copy-on-Write (CoW), o arquivo é copiado da camada imutável da imagem para a camada temporária gravável (Read-Write layer) do container no momento da modificação.',
-        fail: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorreto. O Docker utiliza Copy-on-Write (CoW), onde apenas os arquivos modificados são copiados para a camada superior de leitura/escrita do container.'
-      },
-      {
-        q: 'No modo de rede padrão do Docker em Linux (bridge), como o Docker permite que tráfego de entrada atinja uma porta exposta de um container?',
-        opts: [
-          'Criando regras de roteamento dinâmico via BGP no kernel.',
-          'Modificando as regras de tradução de endereços (DNAT) na tabela nat do iptables no host.',
-          'Criando um túnel SSH reverso criptografado automático.',
-          'Encapsulando todos os pacotes em pacotes VXLAN no switch virtual.'
-        ],
-        ans: 1,
-        ok: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--green); filter:drop-shadow(0 0 4px var(--green));" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Sensacional! O Docker manipula o subsistema Netfilter no Linux criando regras DNAT (Destination NAT) no iptables para encaminhar pacotes da porta do host para o IP interno do container na ponte docker0.',
-        fail: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorreto. O Docker cria regras de DNAT na tabela nat do iptables no host para redirecionar o tráfego.'
-      },
-      {
-        q: 'O que acontece com o cache de build do Docker se você alterar a linha "COPY package.json ." para "COPY package.json ./app/" em um Dockerfile, mas os arquivos de origem forem idênticos?',
-        opts: [
-          'O cache continua sendo usado normalmente nas linhas seguintes porque os arquivos não mudaram.',
-          'O Docker ignora a mudança do caminho de destino e usa o cache se o checksum do package.json coincidir.',
-          'O cache é invalidado a partir da instrução COPY alterada e de todas as instruções subsequentes, pois a própria string do comando mudou.',
-          'O build falha porque caminhos relativos em COPY não são válidos.'
-        ],
-        ans: 2,
-        ok: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--green); filter:drop-shadow(0 0 4px var(--green));" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Correto! Qualquer modificação em uma instrução do Dockerfile (mesmo que apenas no caminho de destino de um COPY) invalida o cache para essa instrução e todas as subsequentes.',
-        fail: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorreto. Qualquer alteração na definição do comando no Dockerfile invalida o cache a partir daquele passo, reexecutando todas as instruções seguintes.'
-      },
-      {
-        q: 'Qual é a diferença crucial de sinalização entre os comandos "docker stop" e "docker kill" para encerrar um container?',
-        opts: [
-          'docker stop envia SIGTERM e, após um grace period, SIGKILL. docker kill envia SIGKILL imediatamente.',
-          'docker stop envia SIGINT e docker kill envia SIGTERM.',
-          'Ambos enviam SIGKILL, mas docker stop salva o estado da memória RAM del container em disco.',
-          'docker stop desliga a placa de rede e docker kill para os processos.'
-        ],
-        ans: 0,
-        ok: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--green); filter:drop-shadow(0 0 4px var(--green));" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Genial! O docker stop dá tempo para o processo realizar um desligamento limpo enviando SIGTERM (aguardando 10s por padrão antes do SIGKILL). O docker kill envia SIGKILL de imediato, forçando a parada.',
-        fail: '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Incorreto. O docker stop envia SIGTERM e aguarda um tempo de tolerância para encerramento gracioso antes de forçar com SIGKILL. O docker kill envia SIGKILL imediatamente.'
-      }
-    ];
-
-    let qIndex = 0, score = 0, answered = false;
-
-    function renderQuiz() {
-      const q = QUESTIONS[qIndex];
-      // Progress dots
-      const prog = document.getElementById('quizProgress');
-      prog.innerHTML = QUESTIONS.map((_, i) =>
-        `<div class="quiz-dot ${i < qIndex ? 'done' : i === qIndex ? 'current' : ''}"></div>`
-      ).join('');
-
-      document.getElementById('quizQ').textContent = q.q;
-
-      const opts = document.getElementById('quizOpts');
-      opts.innerHTML = q.opts.map((o, i) =>
-        `<button class="quiz-opt" onclick="answerQ(${i})" data-i="${i}">
-      <span class="opt-letter">${'ABCD'[i]}</span> ${o}
-    </button>`
-      ).join('');
-
-      document.getElementById('quizFeedback').className = 'quiz-feedback';
-      document.getElementById('quizFeedback').textContent = '';
-      document.getElementById('quizNext').style.display = 'none';
-      answered = false;
-    }
-
-    function answerQ(i) {
-      if (answered) return;
-      answered = true;
-      const q = QUESTIONS[qIndex];
-      const opts = document.querySelectorAll('.quiz-opt');
-      opts.forEach(o => o.disabled = true);
-      opts[i].classList.add(i === q.ans ? 'correct' : 'wrong');
-      if (i !== q.ans) opts[q.ans].classList.add('correct');
-      if (i === q.ans) score++;
-
-      const fb = document.getElementById('quizFeedback');
-      fb.innerHTML = i === q.ans ? q.ok : q.fail;
-      fb.className = 'quiz-feedback show ' + (i === q.ans ? 'ok' : 'fail');
-
-      const btn = document.getElementById('quizNext');
-      btn.textContent = qIndex < QUESTIONS.length - 1 ? 'Próxima →' : 'Ver Resultado';
-      btn.style.display = 'inline-block';
-    }
-
-    function nextQ() {
-      qIndex++;
-      if (qIndex >= QUESTIONS.length) {
-        showScore();
-      } else {
-        renderQuiz();
-      }
-    }
-
-    function showScore() {
-      document.getElementById('quizContent').style.display = 'none';
-      const s = document.getElementById('quizScore');
-      s.style.display = 'block';
-      document.getElementById('scoreNum').textContent = score;
-      const emojis = [
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--red); filter:drop-shadow(0 0 6px var(--red));" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>', // 0/5
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--yellow); filter:drop-shadow(0 0 6px var(--yellow));" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>', // 1/5
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--cyan); filter:drop-shadow(0 0 6px var(--cyan));" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', // 2/5
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--green); filter:drop-shadow(0 0 6px var(--green));" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>', // 3/5
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--cyan); filter:drop-shadow(0 0 6px var(--cyan));" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.25-2.5 3.5-2.5 3.5s2.25-1 3.5-2.5M12 2C8 2 4 6 4 10c0 2 1.5 3.5 3 4.5L12 12l2.5 5c1-1.5 2.5-3 4.5-3 4 0 8-4 8-8s-4-8-8-8z"/><line x1="9" y1="15" x2="15" y2="9"/></svg>', // 4/5
-        '<svg class="retro-icon" style="width:1.5em; height:1.5em; color:var(--green); filter:drop-shadow(0 0 6px var(--green));" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' // 5/5
-      ];
-      const msgs = [
-        'STATUS: ACCESS DENIED (0/5) - Permissão insuficiente. Você precisa auditar a arquitetura interna do Docker novamente.',
-        'STATUS: STACK OVERFLOW (1/5) - Seu container falhou no boot e você mal arranhou a superfície das primitivas do kernel.',
-        'STATUS: BUILD FAILED (2/5) - Bom começo, mas as regras de rede (bridge DNAT) e cgroups derrubaram seus containers.',
-        'STATUS: DEPLOY WARNING (3/5) - Bom domínio, mas ainda restam dúvidas em UnionFS / Overlay2 CoW e invalidação de cache.',
-        'STATUS: CLUSTER OPERATIVE (4/5) - Quase perfeito! Seu entendimento de conteinerização profunda é louvável.',
-        'STATUS: ROOT ACCESS GRANTED (5/5) - Você é um lendário Arquiteto de Sistemas, dominando o kernel Linux sob o Docker!'
-      ];
-      document.getElementById('scoreEmoji').innerHTML = emojis[score];
-      document.getElementById('scoreMsg').textContent = msgs[score];
-    }
-
-    function restartQuiz() {
-      qIndex = 0; score = 0; answered = false;
-      document.getElementById('quizContent').style.display = 'block';
-      document.getElementById('quizScore').style.display = 'none';
-      renderQuiz();
-    }
-
-    // Init
-    renderQuiz();
   </script>
 </body>
 
