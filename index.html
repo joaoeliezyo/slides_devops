@@ -3003,11 +3003,7 @@
                             <div class="en-sub">Interface de linha de comando. O que você digita no terminal. Envia
                                 comandos para o
                                 Daemon via socket Unix.</div>
-                            <div class="en-code"># O ponto de entrada para orquestrar:
-                                $ docker system info
-                                $ docker network ls
-                                $ docker volume ls
-                                $ docker compose up -d</div>
+                            <div class="en-code" data-code-id="eco-cli"></div>
                         </div>
 
                         <div class="eco-node highlighted">
@@ -3020,11 +3016,7 @@
                             <div class="en-sub">Processo em background que faz o trabalho pesado: gerencia imagens,
                                 containers, redes
                                 e volumes. Usa containerd + runc internamente.</div>
-                            <div class="en-code"># Socket de comunicação
-                                /var/run/docker.sock
-
-                                # Componentes internos
-                                dockerd → containerd → runc</div>
+                            <div class="en-code" data-code-id="eco-daemon"></div>
                         </div>
 
                         <div class="eco-node highlighted">
@@ -3040,11 +3032,7 @@
                             <div class="en-sub">Repositório de imagens. Pense no npm para pacotes, mas para imagens
                                 Docker. Pode ser
                                 público ou privado.</div>
-                            <div class="en-code"># Baixar imagem do Hub
-                                $ docker pull nginx:alpine
-
-                                # Enviar sua imagem
-                                $ docker push user/meu-app:v1</div>
+                            <div class="en-code" data-code-id="eco-registry"></div>
                         </div>
 
                         <div class="eco-node highlighted">
@@ -3056,14 +3044,7 @@
                                 </svg></span>
                             <div class="en-title">Redes</div>
                             <div class="en-sub">Comunicação entre containers via bridge, host ou overlay networks.</div>
-                            <div class="en-code"># Criar uma rede bridge customizada
-                                $ docker network create app-net
-
-                                # Iniciar container conectado à rede
-                                $ docker run -d --net app-net --name web nginx
-
-                                # Listar todas as redes no host
-                                $ docker network ls</div>
+                            <div class="en-code" data-code-id="eco-redes"></div>
                         </div>
 
                         <div class="eco-node highlighted">
@@ -3074,14 +3055,7 @@
                                 </svg></span>
                             <div class="en-title">Volumes</div>
                             <div class="en-sub">Persistência de dados além do ciclo de vida do container.</div>
-                            <div class="en-code"># Criar volume nomeado persistente
-                                $ docker volume create pg-data
-
-                                # Montar volume no container (postgres)
-                                $ docker run -d -v pg-data:/var/lib/postgresql/data postgres
-
-                                # Inspecionar detalhes do volume
-                                $ docker volume inspect pg-data</div>
+                            <div class="en-code" data-code-id="eco-volumes"></div>
                         </div>
 
                         <div class="eco-node highlighted">
@@ -3092,14 +3066,7 @@
                                 </svg></span>
                             <div class="en-title">Docker Compose</div>
                             <div class="en-sub">Orquestra múltiplos containers com um único arquivo YAML.</div>
-                            <div class="en-code"># Subir stack completa em background
-                                $ docker compose up -d
-
-                                # Visualizar status dos serviços compose
-                                $ docker compose ps
-
-                                # Derrubar stack e remover volumes
-                                $ docker compose down -v</div>
+                            <div class="en-code" data-code-id="eco-compose"></div>
                         </div>
 
                     </div>
@@ -3138,9 +3105,7 @@
                             <div class="vc-desc">Todo desenvolvedor do time roda exatamente o mesmo ambiente. Sem
                                 "funciona na minha
                                 máquina". O Dockerfile é a fonte da verdade.</div>
-                            <div class="vc-example"># Novo dev no time? Só isso:
-                                $ git clone repo && docker compose up
-                                # Ambiente idêntico em 2 minutos ✓</div>
+                            <div class="vc-example" data-code-id="reproducible-env"></div>
                         </div>
                         <div class="vantagem-card">
                             <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
@@ -3153,11 +3118,7 @@
                             <div class="vc-desc">Projetos diferentes podem usar versões conflitantes da mesma tecnologia
                                 no mesmo
                                 servidor, sem interferência.</div>
-                            <div class="vc-example"># Projeto A — Node 16
-                                docker run node:16 node -v
-
-                                # Projeto B — Node 20 (mesmo host!)
-                                docker run node:20 node -v</div>
+                            <div class="vc-example" data-code-id="dependency-isolation"></div>
                         </div>
                         <div class="vantagem-card">
                             <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
@@ -3169,12 +3130,7 @@
                             <div class="vc-desc">Build uma vez, execute em qualquer lugar. A imagem gerada no pipeline é
                                 exatamente a
                                 mesma que vai para produção.</div>
-                            <div class="vc-example"># Pipeline GitHub Actions
-                                - name: Build e Push
-                                run: |
-                                docker build -t app:$SHA .
-                                docker push app:$SHA
-                                # Mesma imagem → staging → prod</div>
+                            <div class="vc-example" data-code-id="cicd-simplified"></div>
                         </div>
                         <div class="vantagem-card">
                             <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
@@ -3184,11 +3140,7 @@
                             <div class="vc-desc">Inicie dezenas de instâncias idênticas em segundos para lidar com picos
                                 de tráfego.
                                 Cada container é stateless e substituível.</div>
-                            <div class="vc-example"># Sobe 5 instâncias do serviço web
-                                $ docker compose up --scale web=5
-
-                                # Resultado:
-                                web_1, web_2, web_3, web_4, web_5 ✓</div>
+                            <div class="vc-example" data-code-id="horizontal-scaling"></div>
                         </div>
                         <div class="vantagem-card">
                             <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
@@ -3198,12 +3150,7 @@
                             <div class="vc-desc">Cada container opera em namespaces isolados. Uma vulnerabilidade em um
                                 serviço não
                                 compromete automaticamente os outros.</div>
-                            <div class="vc-example"># Limitar recursos do container
-                                docker run \
-                                --memory="512m" \
-                                --cpus="0.5" \
-                                --read-only \
-                                meu-app</div>
+                            <div class="vc-example" data-code-id="security-isolation"></div>
                         </div>
                         <div class="vantagem-card">
                             <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
@@ -3216,11 +3163,7 @@
                             <div class="vc-desc">Dockerfile e docker-compose.yml vivem no repositório junto com o
                                 código.
                                 Infraestrutura versionada, revisada e auditável.</div>
-                            <div class="vc-example"># Tudo no git
-                                git log --oneline
-                                a3f2b1c fix: atualiza Node 20→22
-                                7d9e4f0 feat: adiciona serviço Redis
-                                2c8a1b3 chore: reduz imagem (multi-stage)</div>
+                            <div class="vc-example" data-code-id="infrastructure-as-code"></div>
                         </div>
                     </div>
                 </div>
@@ -3375,6 +3318,7 @@
             </svg> para aprender Docker de verdade · <span>docker.learn</span></p>
     </footer>
 
+    <script src="snippets.js"></script>
     <script>
         /* ─────────────────────────────────────────
            PARTICLES
@@ -3800,7 +3744,7 @@
         /* ─────────────────────────────────────────
            CHALLENGE — Moved to external Docker Game
         ───────────────────────────────────────── */
-    </script>
+  </script>
 </body>
 
 </html>

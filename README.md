@@ -78,8 +78,10 @@ npx serve .
 ```text
 slides_devops/
 ├── INDEX.html           # A aplicação principal (HTML, CSS e JS do Deck)
+├── snippets.js          # Trechos de código externalizados para melhor formatação
 ├── README.md            # Documentação do projeto (este arquivo)
 ├── docker_nobg.png      # Logo estilizada da baleia Docker (Hero)
+├── favicon.ico          # Favicon gerado a partir da imagem do logotipo
 └── container_vs_vm.jpg  # Ilustração comparativa de VM vs Container
 ```
 
