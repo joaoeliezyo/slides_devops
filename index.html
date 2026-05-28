@@ -1009,35 +1009,7 @@
                     <div class="dot dot-green"></div>
                     <span class="file-name">docker-compose.yml</span>
                 </div>
-                <div class="compose-body"
-                    style="white-space: pre; font-size: 0.88rem; line-height: 1.7; overflow-x: auto; background: #090d16; border-radius: 0 0 12px 12px; max-height: 480px; overflow-y: auto;">
-                    <span class="cy-com"># Sobe toda a stack com: docker compose up -d</span>
-                    <span class="cy-key">services</span>:
-
-                    <span class="cy-key">web</span>: <span class="cy-com"># Serviço da aplicação Node.js</span>
-                    <span class="cy-key">build</span>: <span class="cy-str">.</span>
-                    <span class="cy-key">ports</span>:
-                    - <span class="cy-str">"3000:3000"</span>
-                    <span class="cy-key">environment</span>:
-                    <span class="cy-key">DATABASE_URL</span>: <span class="cy-str">"postgres://db:5432/app"</span>
-                    <span class="cy-key">REDIS_URL</span>: <span class="cy-str">"redis://cache:6379"</span>
-                    <span class="cy-key">depends_on</span>:
-                    - <span class="cy-str">db</span>
-                    - <span class="cy-str">cache</span>
-
-                    <span class="cy-key">db</span>: <span class="cy-com"># Serviço do Banco PostgreSQL</span>
-                    <span class="cy-key">image</span>: <span class="cy-img">postgres:16-alpine</span>
-                    <span class="cy-key">volumes</span>:
-                    - <span class="cy-str">pgdata:/var/lib/postgresql/data</span>
-                    <span class="cy-key">environment</span>:
-                    <span class="cy-key">POSTGRES_DB</span>: <span class="cy-str">app</span>
-
-                    <span class="cy-key">cache</span>: <span class="cy-com"># Serviço de Cache Redis</span>
-                    <span class="cy-key">image</span>: <span class="cy-img">redis:7-alpine</span>
-
-                    <span class="cy-key">volumes</span>:
-                    <span class="cy-key">pgdata</span>: <span class="cy-com"># Volume nomeado persistente</span>
-                </div>
+                <div class="compose-body" data-code-id="compose-yaml"></div>
             </div>
         </div>
     </section>
