@@ -1,0 +1,3733 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dominando o Docker [HARD_MODE]</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --surface: #090d16;
+      --surface2: #111622;
+      --border: #1e2638;
+      --cyan: #00f0ff;
+      --cyan2: #00b8d4;
+      --green: #39ff14;
+      --yellow: #ffdf00;
+      --red: #ff3131;
+      --text: #f3f4f6;
+      --muted: #6b7280;
+      --font-display: 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      overflow: hidden;
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ── CRT SCANLINES retro overlay ── */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+      background-size: 100% 4px;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* ── PARTICLES BG ── */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 1rem 2rem;
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span {
+      color: var(--text);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      margin-left: auto;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-links a:hover {
+      color: var(--cyan);
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      z-index: 200;
+      transition: width 0.3s;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      /* Align contents from the top to prevent overlapping */
+      align-items: center;
+      overflow-y: auto;
+      /* Allow scrolling inside slide if content overflows */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease-in-out;
+      /* Buttery smooth cross-fade */
+      background: var(--bg);
+      z-index: 10;
+      padding: 5.5rem 2rem 6.5rem;
+      /* 88px top padding for Nav, 104px bottom padding for Footer buffer */
+    }
+
+    section.active-section {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 20;
+    }
+
+    .divider {
+      display: none !important;
+    }
+
+    /* ── TERMINAL REBOOT OVERLAY (REMOVED) ── */
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+
+    .whale {
+      font-size: 5rem;
+      animation: float 3s ease-in-out infinite;
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-16px)
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge::before {
+      content: '●';
+      color: var(--green);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.3
+      }
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 .accent {
+      color: var(--cyan);
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.5
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    /* ── SECTIONS COMMON ── */
+    .section-wrapper {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3.5rem;
+      width: 100%;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-tag::before {
+      content: '// ';
+      opacity: 0.5;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── CONCEPT CARDS ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.06), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+
+    .card-tech {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--green);
+      background: rgba(57, 255, 20, 0.08);
+      border: 1px solid rgba(57, 255, 20, 0.15);
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      align-self: flex-start;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    .retro-icon {
+      width: 1.5em;
+      height: 1.5em;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      vertical-align: middle;
+      color: var(--green);
+      filter: drop-shadow(0 0 4px var(--green));
+    }
+
+    .retro-icon.cyan-phosphor {
+      color: var(--cyan);
+      filter: drop-shadow(0 0 4px var(--cyan));
+    }
+
+    /* ── CARD SLIDER SYSTEM ── */
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      margin-top: 1.5rem;
+    }
+
+    .slider-track-container {
+      overflow: hidden;
+      width: 100%;
+      padding: 0.5rem 3.5rem;
+      /* Espaço para o peek (revelar cartões vizinhos) */
+      transition: padding 0.3s ease;
+    }
+
+    .slider-track {
+      display: flex;
+      gap: 1.5rem;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+
+    .slider-track .card,
+    .slider-track .vantagem-card,
+    .slider-track .eco-node {
+      flex: 0 0 calc(33.333% - 1rem);
+      /* 3 cards visíveis na área de conteúdo */
+      min-width: 280px;
+    }
+
+    @media (max-width: 1024px) {
+
+      .slider-track .card,
+      .slider-track .vantagem-card,
+      .slider-track .eco-node {
+        flex: 0 0 calc(50% - 0.75rem);
+        /* 2 cards visíveis */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .slider-track-container {
+        padding: 0.5rem 1.75rem;
+        /* Ajuste do peek para telas pequenas */
+      }
+
+      .slider-track .card,
+      .slider-track .vantagem-card,
+      .slider-track .eco-node {
+        flex: 0 0 100%;
+        /* 1 card visível */
+      }
+    }
+
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%) scale(1);
+      background: rgba(10, 14, 26, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.25s ease-in-out;
+      z-index: 15;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .slider-btn.prev {
+      left: 10px;
+    }
+
+    .slider-btn.next {
+      right: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .slider-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 0.95rem;
+      }
+
+      .slider-btn.prev {
+        left: 5px;
+      }
+
+      .slider-btn.next {
+        right: 5px;
+      }
+    }
+
+    .slider-btn:hover:not(:disabled) {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+      transform: translateY(-50%) scale(1.08);
+      border-color: var(--cyan);
+    }
+
+    .slider-btn:disabled {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+
+    .slider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .slider-dot:hover {
+      background: var(--cyan2);
+    }
+
+    .slider-dot.active {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      transform: scale(1.25);
+    }
+
+    /* ── VM vs CONTAINERS ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media(max-width:600px) {
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .compare-card.vm:hover {
+      border-color: var(--red);
+    }
+
+    .compare-card.docker:hover {
+      border-color: var(--green);
+    }
+
+    .compare-card h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .compare-card.vm h3 {
+      color: var(--red);
+    }
+
+    .compare-card.docker h3 {
+      color: var(--green);
+    }
+
+    .compare-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .compare-row:last-child {
+      border-bottom: none;
+    }
+
+    .compare-row .label {
+      color: var(--muted);
+    }
+
+    .compare-row .value {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .compare-card.vm .value {
+      color: var(--red);
+    }
+
+    .compare-card.docker .value {
+      color: var(--green);
+    }
+
+    /* ── TRINDADE FLOW ── */
+    .trinity-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .trinity-step {
+      flex: 1;
+      min-width: 220px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      padding: 2rem;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .trinity-step:first-child {
+      border-radius: 16px 0 0 16px;
+    }
+
+    .trinity-step:last-child {
+      border-radius: 0 16px 16px 0;
+    }
+
+    .trinity-step:hover {
+      background: var(--surface2);
+      z-index: 2;
+    }
+
+    .trinity-step.active {
+      border-color: var(--cyan);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .trinity-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      min-width: 40px;
+      color: var(--cyan);
+      font-size: 1.5rem;
+      background: var(--bg);
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .step-code {
+      margin-top: 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--green);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      /* Wrap long lines if necessary */
+    }
+
+    /* ── TERMINAL LAB ── */
+    #lab {
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 255, 157, 0.04), transparent 60%);
+    }
+
+    .terminal-container {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .terminal-bar {
+      background: #161b22;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red {
+      background: #ff5f57;
+    }
+
+    .dot-yellow {
+      background: #febc2e;
+    }
+
+    .dot-green {
+      background: #28c840;
+    }
+
+    .terminal-title {
+      margin-left: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+
+    .terminal-body {
+      padding: 1.5rem;
+      height: 320px;
+      /* Fixed height for scrolling console */
+      overflow-y: auto;
+      /* Vertical scrollbar internally */
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.8;
+    }
+
+    .t-prompt {
+      color: #79c0ff;
+    }
+
+    .t-cmd {
+      color: #e6edf3;
+    }
+
+    .t-output {
+      color: #8b949e;
+    }
+
+    .t-success {
+      color: var(--green);
+    }
+
+    .t-info {
+      color: var(--cyan);
+    }
+
+    .t-warning {
+      color: var(--yellow);
+    }
+
+    .t-error {
+      color: var(--red);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--green);
+      animation: blink 1s infinite;
+      vertical-align: text-bottom;
+      margin-left: 2px;
+    }
+
+    .lab-controls {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+      flex-wrap: nowrap;
+      /* Do not wrap, keep on single line */
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .lab-btn {
+      padding: 0.65rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      /* Compact technical sizing to fit one row */
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+      white-space: nowrap;
+      /* Prevent layout breakage */
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lab-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+    }
+
+    .lab-btn.active {
+      background: rgba(0, 255, 157, 0.1);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .lab-btn .icon {
+      display: none;
+      /* Emojis are hidden */
+    }
+
+    /* ── QUIZ CHALLENGE ── */
+    #challenge {
+      background: radial-gradient(ellipse at 80% 50%, rgba(255, 214, 0, 0.04), transparent 60%);
+    }
+
+    .quiz-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 700px;
+    }
+
+    .quiz-progress {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-dot {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .quiz-dot.done {
+      background: var(--green);
+    }
+
+    .quiz-dot.current {
+      background: var(--cyan);
+    }
+
+    .quiz-q {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .quiz-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-opt {
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: rgba(0, 212, 255, 0.05);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, 0.1);
+      color: var(--green);
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, 0.1);
+      color: var(--red);
+    }
+
+    .quiz-opt:disabled {
+      cursor: default;
+    }
+
+    .opt-letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .quiz-opt.correct .opt-letter {
+      background: var(--green);
+      color: #000;
+    }
+
+    .quiz-opt.wrong .opt-letter {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .quiz-feedback {
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.ok {
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+
+    .quiz-feedback.fail {
+      background: rgba(255, 77, 109, 0.1);
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+
+    .quiz-score {
+      text-align: center;
+      padding: 2rem;
+      display: none;
+    }
+
+    .score-number {
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+    }
+
+    .score-label {
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    .score-emoji {
+      font-size: 3rem;
+      margin-top: 1rem;
+      display: block;
+    }
+
+    /* ── STATS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+    }
+
+    .stat-unit {
+      font-size: 1rem;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 95;
+      border-top: none;
+      background: transparent;
+      padding: 0.75rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    footer span {
+      color: var(--cyan);
+    }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: 0.3s;
+    }
+
+    .reveal-delay-4 {
+      transition-delay: 0.4s;
+    }
+
+    /* ── TOOLTIP ── */
+    [data-tip] {
+      position: relative;
+      cursor: help;
+    }
+
+    [data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      transform-origin: bottom center;
+      background: #1e2d45;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.2s;
+      z-index: 50;
+      font-family: var(--font-mono);
+    }
+
+    [data-tip]:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* ── MISC ── */
+    .glow-text {
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0;
+    }
+
+    .text-cyan {
+      color: var(--cyan);
+    }
+
+    .text-green {
+      color: var(--green);
+    }
+
+    .text-yellow {
+      color: var(--yellow);
+    }
+
+    .mt-1 {
+      margin-top: 0.5rem;
+    }
+
+    .mt-2 {
+      margin-top: 1rem;
+    }
+
+    /* ── NERD TERMINAL ESTILOS EXTRAS ── */
+    h2::before {
+      content: '> ';
+      color: var(--cyan);
+    }
+
+    .section-tag .prompt {
+      color: var(--green);
+      margin-right: 0.25rem;
+    }
+
+    .section-tag .cmd {
+      color: var(--text);
+    }
+
+    /* Decorações de Janela Terminal para Cards */
+    .card,
+    .compare-card,
+    .quiz-card,
+    .trinity-step {
+      position: relative;
+      padding-top: 2.75rem !important;
+    }
+
+    .card::after,
+    .compare-card::after,
+    .quiz-card::after,
+    .trinity-step::after {
+      content: '■ ■ ■';
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--border);
+      transition: color 0.3s;
+      font-family: var(--font-mono);
+    }
+
+    .card:hover::after,
+    .compare-card:hover::after,
+    .quiz-card:hover::after,
+    .trinity-step:hover::after {
+      color: var(--cyan);
+    }
+
+    .hero-image-wrapper {
+      text-align: center;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+
+    .hero-whale-img {
+      max-width: 320px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.45));
+      animation: float-ani 3.5s ease-in-out infinite;
+    }
+
+    @keyframes float-ani {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+
+
+    /* ── SLIDE: CONTEINERIZAÇÃO ── */
+    .container-analogy {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    @media(max-width:700px) {
+      .container-analogy {
+        grid-template-columns: 1fr;
+      }
+
+      .analogy-arrow {
+        display: none;
+      }
+    }
+
+    .analogy-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      position: relative;
+      padding-top: 2.75rem !important;
+    }
+
+    .analogy-box::after {
+      content: '■ ■ ■';
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--border);
+      transition: color 0.3s;
+      font-family: var(--font-mono);
+    }
+
+    .analogy-box:hover::after {
+      color: var(--cyan);
+    }
+
+    .analogy-box.broken {
+      border-color: rgba(255, 49, 49, 0.4);
+    }
+
+    .analogy-box.broken:hover {
+      border-color: var(--red);
+    }
+
+    .analogy-box.fixed {
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+
+    .analogy-box.fixed:hover {
+      border-color: var(--green);
+    }
+
+    .analogy-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      font-family: var(--font-mono);
+    }
+
+    .analogy-box.broken .analogy-label {
+      color: var(--red);
+    }
+
+    .analogy-box.fixed .analogy-label {
+      color: var(--green);
+    }
+
+    .analogy-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .layer {
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .layer-app {
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+
+    .layer-broken {
+      background: rgba(255, 49, 49, 0.1);
+      color: var(--red);
+      border: 1px solid rgba(255, 49, 49, 0.3);
+    }
+
+    .layer-os {
+      background: rgba(107, 114, 128, 0.15);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .layer-hw {
+      background: rgba(107, 114, 128, 0.1);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .layer-runtime {
+      background: rgba(57, 255, 20, 0.08);
+      color: var(--green);
+      border: 1px solid rgba(57, 255, 20, 0.25);
+    }
+
+    .layer-libs {
+      background: rgba(57, 255, 20, 0.05);
+      color: var(--green);
+      border: 1px solid rgba(57, 255, 20, 0.15);
+    }
+
+    .layer-env {
+      background: rgba(255, 223, 0, 0.07);
+      color: var(--yellow);
+      border: 1px solid rgba(255, 223, 0, 0.2);
+    }
+
+    .layer-box-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+
+    .analogy-arrow {
+      font-size: 2rem;
+      color: var(--cyan);
+      text-align: center;
+      text-shadow: 0 0 20px var(--cyan);
+      animation: pulse 2s infinite;
+    }
+
+    .problem-quote {
+      background: rgba(255, 49, 49, 0.07);
+      border: 1px solid rgba(255, 49, 49, 0.3);
+      border-left: 3px solid var(--red);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    .problem-quote span {
+      color: var(--red);
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    .what-packs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .pack-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+
+    .pack-item:hover {
+      border-color: var(--cyan);
+      transform: translateX(4px);
+    }
+
+    .pack-item .pi {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .pack-item .pt {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 0.15rem;
+    }
+
+    .pack-item .pn {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* ── SLIDE: VM vs CONTAINER (ARQUITETURA) ── */
+    .arch-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media(max-width:650px) {
+      .arch-compare {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .arch-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .arch-title {
+      text-align: center;
+      padding: 0.75rem;
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: 10px 10px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      letter-spacing: 0.05em;
+    }
+
+    .arch-title.vm-title {
+      background: rgba(255, 49, 49, 0.12);
+      color: var(--red);
+      border-color: rgba(255, 49, 49, 0.35);
+    }
+
+    .arch-title.ct-title {
+      background: rgba(57, 255, 20, 0.08);
+      color: var(--green);
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+
+    .arch-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .arch-layer {
+      padding: 0.65rem 1rem;
+      text-align: center;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      cursor: help;
+      transition: all 0.2s;
+    }
+
+    .arch-layer:last-child {
+      border-radius: 0 0 10px 10px;
+    }
+
+    .arch-layer:hover {
+      filter: brightness(1.3);
+      z-index: 2;
+    }
+
+    .arch-layer .layer-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-weight: 400;
+      display: block;
+      margin-top: 0.1rem;
+    }
+
+    .al-hw {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .al-hypervisor {
+      background: rgba(255, 49, 49, 0.12);
+      color: var(--red);
+      border-color: rgba(255, 49, 49, 0.3);
+    }
+
+    .al-guestos {
+      background: rgba(255, 49, 49, 0.08);
+      color: rgba(255, 100, 100, 0.9);
+      border-color: rgba(255, 49, 49, 0.2);
+    }
+
+    .al-bins {
+      background: rgba(107, 114, 128, 0.12);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .al-app {
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan);
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .al-hostos {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .al-engine {
+      background: rgba(57, 255, 20, 0.1);
+      color: var(--green);
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+
+    .al-container {
+      background: rgba(0, 240, 255, 0.08);
+      color: var(--cyan);
+      border-color: rgba(0, 240, 255, 0.2);
+    }
+
+    .al-shared-kernel {
+      background: rgba(255, 223, 0, 0.08);
+      color: var(--yellow);
+      border: 1px dashed rgba(255, 223, 0, 0.35);
+      border-radius: 6px;
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      margin-top: 0.5rem;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+
+    .compare-table th {
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+
+    .compare-table th:first-child {
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .compare-table th.th-vm {
+      color: var(--red);
+      text-align: center;
+    }
+
+    .compare-table th.th-ct {
+      color: var(--green);
+      text-align: center;
+    }
+
+    .compare-table td {
+      padding: 0.85rem 1rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .compare-table td:first-child {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .compare-table td.vm-val {
+      color: var(--red);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .compare-table td.ct-val {
+      color: var(--green);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .vm-compare-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.5rem;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .vm-compare-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* ── SLIDE: O QUE É DOCKER ── */
+    .docker-eco {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .eco-row {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .eco-node {
+      flex: 1;
+      min-width: 160px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      padding-top: 2.75rem !important;
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .eco-node::after {
+      content: '■ ■ ■';
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--border);
+      transition: color 0.3s;
+      font-family: var(--font-mono);
+    }
+
+    .eco-node:hover::after {
+      color: var(--cyan);
+    }
+
+    .eco-node:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .eco-node.highlighted {
+      border-color: rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.04);
+    }
+
+    .eco-node .en-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .eco-node .en-title {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    .eco-node .en-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .eco-node .en-code {
+      margin-top: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .eco-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-size: 1.4rem;
+      min-width: 32px;
+      text-shadow: 0 0 12px var(--cyan);
+    }
+
+    .flow-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    .history-bar {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .hist-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .hist-year {
+      font-weight: 800;
+      color: var(--cyan);
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .hist-text {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .hist-text strong {
+      color: var(--text);
+    }
+
+    .hist-sep {
+      color: var(--border);
+      font-size: 1.2rem;
+    }
+
+    /* ── SLIDE: VANTAGENS ── */
+    .vantagens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .vantagem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      padding-top: 2.75rem !important;
+      position: relative;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vantagem-card::after {
+      content: '■ ■ ■';
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--border);
+      transition: color 0.3s;
+      font-family: var(--font-mono);
+    }
+
+    .vantagem-card:hover::after {
+      color: var(--cyan);
+    }
+
+    .vantagem-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+    }
+
+    .vantagem-card:hover .vc-icon {
+      transform: scale(1.15);
+    }
+
+    .vc-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+      transition: transform 0.3s;
+    }
+
+    .vc-title {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .vc-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+
+    .vc-example {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .compose-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .compose-bar {
+      background: #161b22;
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .compose-bar .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .compose-bar .file-name {
+      margin-left: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+
+    .compose-body {
+      padding: 1.25rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.9;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .cy-key {
+      color: #79c0ff;
+    }
+
+    .cy-val {
+      color: #a5d6ff;
+    }
+
+    .cy-str {
+      color: #a8ff78;
+    }
+
+    .cy-num {
+      color: #ffa657;
+    }
+
+    .cy-com {
+      color: #8b949e;
+    }
+
+    .cy-img {
+      color: var(--cyan);
+    }
+
+    /* ── SLIDE: CONCEITOS BÁSICOS ── */
+    .concepts-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ctab {
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .ctab:hover {
+      color: var(--text);
+    }
+
+    .ctab.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .ctab-panel {
+      display: none;
+      padding-top: 2rem;
+    }
+
+    .ctab-panel.active {
+      display: block;
+    }
+
+    .dockerfile-annotated {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .df-lines {
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 1.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #484f58;
+      user-select: none;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .df-code-area {
+      overflow: auto;
+    }
+
+    .df-code {
+      padding: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+
+    .df-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      position: relative;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 0 0.5rem;
+      transition: background 0.15s;
+    }
+
+    .df-line:hover {
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .df-line.highlighted {
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .df-instr {
+      color: #ff7b72;
+      font-weight: 700;
+      min-width: 80px;
+    }
+
+    .df-arg {
+      color: #a8ff78;
+    }
+
+    .df-comment {
+      color: #8b949e;
+      font-style: italic;
+    }
+
+    .df-annotation {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      line-height: 1.6;
+      display: none;
+    }
+
+    .df-annotation.show {
+      display: block;
+    }
+
+    .layers-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+      max-width: 480px;
+      margin: 0 auto 2rem;
+    }
+
+    .img-layer {
+      padding: 0.9rem 1.5rem;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: default;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .img-layer:first-child {
+      border-radius: 10px 10px 0 0;
+    }
+
+    .img-layer:last-child {
+      border-radius: 0 0 10px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .img-layer:hover {
+      filter: brightness(1.25);
+      z-index: 2;
+    }
+
+    .img-layer .il-size {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .il-rw {
+      background: rgba(57, 255, 20, 0.1);
+      color: var(--green);
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+
+    .il-cmd {
+      background: rgba(0, 240, 255, 0.07);
+      color: var(--cyan);
+      border-color: rgba(0, 240, 255, 0.2);
+    }
+
+    .il-npm {
+      background: rgba(255, 223, 0, 0.06);
+      color: var(--yellow);
+      border-color: rgba(255, 223, 0, 0.2);
+    }
+
+    .il-copy {
+      background: rgba(107, 114, 128, 0.12);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .il-wdir {
+      background: rgba(107, 114, 128, 0.1);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+
+    .il-base {
+      background: rgba(0, 240, 255, 0.04);
+      color: rgba(0, 240, 255, 0.7);
+      border-color: rgba(0, 240, 255, 0.15);
+    }
+
+    .il-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .il-badge.rw {
+      background: rgba(57, 255, 20, 0.2);
+      color: var(--green);
+    }
+
+    .il-badge.ro {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--muted);
+    }
+
+    .cow-note {
+      background: rgba(255, 223, 0, 0.07);
+      border: 1px solid rgba(255, 223, 0, 0.25);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.83rem;
+      color: var(--yellow);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .cow-note strong {
+      color: var(--yellow);
+    }
+
+    .container-lifecycle {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .lc-state {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .lc-state:hover {
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .lc-state .ls-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .lc-state .ls-name {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .lc-state .ls-cmd {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--green);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      display: inline-block;
+      margin-top: 0.35rem;
+    }
+
+    .lc-state .ls-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TERMINAL REBOOT OVERLAY (REMOVED) -->
+
+  <canvas id="particles"></canvas>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <nav>
+    <div class="nav-logo">docker<span>.learn</span></div>
+    <div class="nav-links">
+      <a href="#conteinerizacao">Contêineres</a>
+      <a href="#vmvscontainer">VM vs Container</a>
+      <a href="#oquedocker">Docker</a>
+      <a href="#conceitos">Conceitos</a>
+      <a href="#linhadotempo">Linha do Tempo</a>
+      <a href="#ecossistema">Ecossistema</a>
+      <a href="#vantagens">Vantagens</a>
+      <a href="#exemplocompose">Compose</a>
+      <a href="#lab">Lab</a>
+      <a href="#challenge">Desafio</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section id="hero">
+    <div class="hero-image-wrapper reveal">
+      <img src="docker_nobg.png" alt="Baleia Docker Fofinha" class="hero-whale-img">
+    </div>
+    <div class="hero-badge">Guia Interativo · Docker [HARD_MODE]</div>
+    <h1>Dominando o<br><span class="accent glow-text">Docker</span></h1>
+    <p class="hero-sub">Aprenda contêinerização em profundidade técnica. Explore primitivas do kernel, cgroups,
+      namespaces e pratique com simulador CLI.</p>
+    <div class="btn-group">
+      <a href="#conteinerizacao" class="btn btn-primary">guest@docker:~$ ./start.sh</a>
+      <a href="#lab" class="btn btn-outline">guest@docker:~$ ./view_lab.sh</a>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 1: O QUE É CONTEINERIZAÇÃO ═══════════════ -->
+  <section id="conteinerizacao">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">cat
+          /docs/what-is-containerization.md</span></p>
+      <h2 class="reveal">O que é <span class="text-cyan">Contêinerização</span>?</h2>
+      <p class="section-desc reveal">Contêinerização é a tecnologia que permite empacotar uma aplicação e todas as suas
+        dependências em um único artefato isolado. Conheça os conceitos e primitivas que tornam isso possível:</p>
+
+      <div class="slider-wrapper reveal">
+        <button class="slider-btn prev" onclick="moveSlider('conteinerizacao', -1)">←</button>
+        <div class="slider-track-container">
+          <div class="slider-track" id="slider-track-conteinerizacao">
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg></span>
+              <h3 class="card-title">Isolamento (Namespaces)</h3>
+              <p class="card-desc">Cria partições virtuais de recursos do sistema. O contêiner ganha sua própria árvore
+                de processos (PID), interfaces de rede (NET), pontos de montagem (MNT) e usuários, rodando de forma
+                isolada.</p>
+              <span class="card-tech">Kernel: namespaces</span>
+            </div>
+
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <line x1="12" y1="2" x2="12" y2="22" />
+                  <line x1="5" y1="7" x2="19" y2="7" />
+                  <path d="M5 7L2 17h6z" />
+                  <path d="M19 7l-3 10h6z" />
+                </svg></span>
+              <h3 class="card-title">Controle (cgroups)</h3>
+              <p class="card-desc">Control Groups limitam e medem o uso de recursos físicos. Define limites rígidos de
+                consumo de CPU, memória RAM, I/O de disco e rede, protegendo o sistema contra sobrecargas.</p>
+              <span class="card-tech">Kernel: cgroups</span>
+            </div>
+
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg></span>
+              <h3 class="card-title">Camadas (UnionFS)</h3>
+              <p class="card-desc">O sistema de arquivos é composto por camadas imutáveis sobrepostas. Uma camada
+                temporária de escrita (Read-Write) é adicionada no topo ao iniciar, usando Copy-on-Write (CoW).</p>
+              <span class="card-tech">Filesystem: UnionFS</span>
+            </div>
+
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                  <rect x="9" y="9" width="6" height="6" />
+                  <line x1="9" y1="1" x2="9" y2="4" />
+                  <line x1="15" y1="1" x2="15" y2="4" />
+                  <line x1="9" y1="20" x2="9" y2="23" />
+                  <line x1="15" y1="20" x2="15" y2="23" />
+                  <line x1="20" y1="9" x2="23" y2="9" />
+                  <line x1="20" y1="15" x2="23" y2="15" />
+                  <line x1="1" y1="9" x2="4" y2="9" />
+                  <line x1="1" y1="15" x2="4" y2="15" />
+                </svg></span>
+              <h3 class="card-title">Kernel Compartilhado</h3>
+              <p class="card-desc">Diferente de Máquinas Virtuais (VMs), os contêineres compartilham diretamente o mesmo
+                Kernel do sistema operacional hospedeiro. Isso elimina o overhead de emular hardware virtual.</p>
+              <span class="card-tech">Architecture: Shared Kernel</span>
+            </div>
+
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg></span>
+              <h3 class="card-title">Empacotamento (Imagens)</h3>
+              <p class="card-desc">Consolida o código, runtime (Node, Python), dependências, configurações e ferramentas
+                do sistema em um único pacote imutável, garantindo consistência absoluta entre ambientes.</p>
+              <span class="card-tech">Artifact: OCI Image</span>
+            </div>
+
+            <div class="card">
+              <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                </svg></span>
+              <h3 class="card-title">Portabilidade Total</h3>
+              <p class="card-desc">Como o contêiner traz consigo todo o necessário para rodar, ele funciona de forma
+                consistente em qualquer infraestrutura: do seu laptop local a servidores bare-metal ou nuvem.</p>
+              <span class="card-tech">Standard: Run Anywhere</span>
+            </div>
+          </div>
+        </div>
+        <button class="slider-btn next" onclick="moveSlider('conteinerizacao', 1)">→</button>
+      </div>
+
+      <div class="slider-dots reveal" id="slider-dots-conteinerizacao"></div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 2: VM vs CONTAINER ═══════════════ -->
+  <section id="vmvscontainer">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span
+          class="cmd">./compare_architectures.sh --vm --container</span></p>
+      <h2 class="reveal">VM vs. <span class="text-cyan">Container</span></h2>
+      <p class="section-desc reveal" style="margin-bottom: 1.5rem;">Ambos isolam aplicações, mas de formas radicalmente
+        diferentes. VMs virtualizam hardware inteiro. Containers compartilham o kernel do SO — muito mais eficientes.
+      </p>
+
+      <div class="vm-compare-grid reveal">
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <img src="container_vs_vm.jpg" alt="Comparação de Arquitetura VM vs Container"
+            style="max-height: auto; width: auto; max-width: 100%; border-radius: 12px; border: 1px solid var(--border); filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.12));">
+        </div>
+
+        <table class="compare-table" style="margin-bottom: 0;">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th class="th-vm"><svg class="retro-icon"
+                  style="width:1.1em; height:1.1em; margin-right:6px; color:var(--red); filter:drop-shadow(0 0 4px var(--red));"
+                  viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>VM</th>
+              <th class="th-ct"><svg class="retro-icon cyan-phosphor"
+                  style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+                  <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+                  <line x1="6" y1="5" x2="6" y2="19" />
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="18" y1="5" x2="18" y2="19" />
+                </svg>Container</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Abstração</td>
+              <td class="vm-val">Hardware físico</td>
+              <td class="ct-val">Kernel do SO</td>
+            </tr>
+            <tr>
+              <td>Tamanho típico</td>
+              <td class="vm-val">1 – 20 GB</td>
+              <td class="ct-val">5 – 500 MB</td>
+            </tr>
+            <tr>
+              <td>Tempo de boot</td>
+              <td class="vm-val">30 s – 5 min</td>
+              <td class="ct-val">&lt; 1 segundo</td>
+            </tr>
+            <tr>
+              <td>SO próprio</td>
+              <td class="vm-val">Sim (completo)</td>
+              <td class="ct-val">Não (compartilha kernel)</td>
+            </tr>
+            <tr>
+              <td>Overhead de CPU</td>
+              <td class="vm-val">Alto (emulação)</td>
+              <td class="ct-val">Quase zero</td>
+            </tr>
+            <tr>
+              <td>Overhead de memória</td>
+              <td class="vm-val">Alto (SO convidado)</td>
+              <td class="ct-val">Mínimo</td>
+            </tr>
+            <tr>
+              <td>Isolamento</td>
+              <td class="vm-val">Forte (hardware)</td>
+              <td class="ct-val">Bom (namespaces)</td>
+            </tr>
+            <tr>
+              <td>Portabilidade</td>
+              <td class="vm-val">Limitada</td>
+              <td class="ct-val">Total (qualquer host)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 3: O QUE É O DOCKER ═══════════════ -->
+  <section id="oquedocker">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">docker info --format
+          '{{.ServerVersion}}'</span></p>
+      <h2 class="reveal">O que é o <span class="text-cyan">Docker</span>?</h2>
+      <p class="section-desc reveal">Docker é a plataforma open-source líder mundial que revolucionou a engenharia de
+        software ao padronizar como criamos, empacotamos e executamos aplicações em qualquer infraestrutura através de
+        contêineres.</p>
+
+      <div class="card-grid reveal">
+        <div class="card">
+          <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+              <line x1="2" y1="22" x2="22" y2="22" />
+              <line x1="5" y1="22" x2="5" y2="2" />
+              <line x1="5" y1="5" x2="22" y2="5" />
+              <line x1="18" y1="5" x2="18" y2="12" />
+              <circle cx="18" cy="14" r="2" />
+            </svg></span>
+          <h3 class="card-title">Build (Construir)</h3>
+          <p class="card-desc">Escreva receitas sequenciais em arquivos de texto Dockerfile para compilar e empacotar
+            seu código de forma determinística em imagens portáveis.</p>
+          <span class="card-tech">Standard: Dockerfile</span>
+        </div>
+        <div class="card">
+          <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="3" y1="15" x2="21" y2="15" />
+              <line x1="10" y1="6" x2="14" y2="6" />
+              <line x1="10" y1="12" x2="14" y2="12" />
+              <line x1="10" y1="18" x2="14" y2="18" />
+            </svg></span>
+          <h3 class="card-title">Share (Compartilhar)</h3>
+          <p class="card-desc">Publique e distribua suas imagens no Docker Hub ou em Registries privados corporativos,
+            facilitando a automação de pipelines de CI/CD.</p>
+          <span class="card-tech">Platform: Docker Hub</span>
+        </div>
+        <div class="card">
+          <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+              <path
+                d="M4.5 16.5c-1.5 1.25-2.5 3.5-2.5 3.5s2.25-1 3.5-2.5M12 2C8 2 4 6 4 10c0 2 1.5 3.5 3 4.5L12 12l2.5 5c1-1.5 2.5-3 4.5-3 4 0 8-4 8-8s-4-8-8-8z" />
+              <line x1="9" y1="15" x2="15" y2="9" />
+            </svg></span>
+          <h3 class="card-title">Run (Executar)</h3>
+          <p class="card-desc">Inicie instâncias seguras e totalmente isoladas (contêineres) a partir de imagens em
+            segundos, aproveitando a performance nativa do Kernel host.</p>
+          <span class="card-tech">Runtime: dockerd / containerd</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 5: CONCEITOS BÁSICOS ═══════════════ -->
+  <section id="conceitos">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">man
+          docker-concepts</span></p>
+      <h2 class="reveal">Conceitos <span class="text-cyan">Básicos</span></h2>
+      <p class="section-desc reveal">Três conceitos fundamentais formam a base de todo workflow Docker. Clique nas abas
+        para explorar cada um em profundidade.</p>
+
+      <div class="concepts-tabs reveal">
+        <button class="ctab active" onclick="switchTab('dockerfile')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>Dockerfile</button>
+        <button class="ctab" onclick="switchTab('imagem')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+          </svg>Imagem</button>
+        <button class="ctab" onclick="switchTab('container')"><svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+            <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+            <line x1="6" y1="5" x2="6" y2="19" />
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="18" y1="5" x2="18" y2="19" />
+          </svg>Container</button>
+      </div>
+
+      <!-- TAB: DOCKERFILE -->
+      <div class="ctab-panel active reveal" id="tab-dockerfile">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          O Dockerfile é a <strong style="color:var(--text)">receita</strong> da sua imagem — um arquivo de texto com
+          instruções sequenciais. Cada instrução cria uma nova <strong style="color:var(--cyan)">camada</strong> na
+          imagem. Clique em uma linha para ver a explicação.
+        </p>
+        <div class="dockerfile-annotated">
+          <div class="df-lines">
+            <span>1</span><span>2</span><span>3</span><span>4</span>
+            <span>5</span><span>6</span><span>7</span><span>8</span>
+            <span>9</span><span>10</span><span>11</span><span>12</span>
+          </div>
+          <div class="df-code-area">
+            <div class="df-code">
+              <div class="df-line" onclick="annotate(0)">
+                <span class="df-comment"># Dockerfile — Aplicação Node.js</span>
+              </div>
+              <div class="df-line" onclick="annotate(1)">
+                <span class="df-instr">FROM</span>&nbsp;<span class="df-arg">node:20-alpine</span>
+              </div>
+              <div class="df-line" onclick="annotate(2)" style="margin-top:0.4rem">
+                <span class="df-instr">WORKDIR</span>&nbsp;<span class="df-arg">/app</span>
+              </div>
+              <div class="df-line" onclick="annotate(3)" style="margin-top:0.4rem">
+                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">package*.json ./</span>
+              </div>
+              <div class="df-line" onclick="annotate(4)">
+                <span class="df-instr">RUN</span>&nbsp;<span class="df-arg">npm ci --only=production</span>
+              </div>
+              <div class="df-line" onclick="annotate(5)" style="margin-top:0.4rem">
+                <span class="df-instr">COPY</span>&nbsp;<span class="df-arg">. .</span>
+              </div>
+              <div class="df-line" onclick="annotate(6)" style="margin-top:0.4rem">
+                <span class="df-instr">EXPOSE</span>&nbsp;<span class="df-arg">3000</span>
+              </div>
+              <div class="df-line" onclick="annotate(7)" style="margin-top:0.4rem">
+                <span class="df-instr">CMD</span>&nbsp;<span class="df-arg">["node", "server.js"]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="df-annotation" id="df-ann"></div>
+        <div
+          style="margin-top:1.5rem; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path
+                  d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                <line x1="9" y1="18" x2="15" y2="18" />
+                <line x1="10" y1="22" x2="14" y2="22" />
+              </svg></span>
+            <div>
+              <div class="pn">Ordem importa</div>
+              <div class="pt">Instruções menos mutáveis no topo preservam cache de build</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg></span>
+            <div>
+              <div class="pn">Cache por camada</div>
+              <div class="pt">Se uma instrução não mudou, Docker reutiliza a camada em cache</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <line x1="2" y1="22" x2="22" y2="22" />
+                <line x1="5" y1="22" x2="5" y2="2" />
+                <line x1="5" y1="5" x2="22" y2="5" />
+                <line x1="18" y1="5" x2="18" y2="12" />
+                <circle cx="18" cy="14" r="2" />
+              </svg></span>
+            <div>
+              <div class="pn">Multi-stage builds</div>
+              <div class="pt">Use FROM múltiplos para imagens de prod menores e mais seguras</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: IMAGEM -->
+      <div class="ctab-panel" id="tab-imagem">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          Enquanto o Dockerfile é a receita de construção, a <strong style="color:var(--text)">Imagem é o pacote
+            imutável compilado</strong>.
+          Ela materializa na prática o conceito de <strong style="color:var(--cyan)">camadas sobrepostas do
+            UnionFS</strong> apresentadas no início. Cada
+          instrução do Dockerfile gera uma camada de leitura estática (Read-Only) identificada por um hash único. A
+          camada temporária gravável
+          (Read-Write) só é criada quando o container é de fato executado.
+        </p>
+        <div class="layers-visual">
+          <div class="img-layer il-rw">
+            <span class="il-label"><svg class="retro-icon" style="width:0.8em; height:0.8em; margin-right:6px;"
+                viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+              </svg>Camada R/W do Container</span>
+            <span class="il-badge rw">READ-WRITE</span>
+          </div>
+          <div class="img-layer il-cmd" data-tip="CMD node server.js">
+            <span class="il-label">CMD node server.js</span>
+            <span class="il-size">+1 KB</span>
+          </div>
+          <div class="img-layer il-npm" data-tip="RUN npm ci — instala dependências">
+            <span class="il-label">RUN npm ci</span>
+            <span class="il-size">+48 MB</span>
+          </div>
+          <div class="img-layer il-copy" data-tip="COPY . . — copia código fonte">
+            <span class="il-label">COPY . .</span>
+            <span class="il-size">+2 MB</span>
+          </div>
+          <div class="img-layer il-wdir" data-tip="WORKDIR /app — cria diretório de trabalho">
+            <span class="il-label">WORKDIR /app</span>
+            <span class="il-size">+1 KB</span>
+          </div>
+          <div class="img-layer il-base" data-tip="FROM node:20-alpine — imagem base (já cacheada)">
+            <span class="il-label">FROM node:20-alpine</span>
+            <span class="il-size">+7 MB</span>
+          </div>
+        </div>
+        <div class="cow-note">
+          <svg class="retro-icon"
+            style="width:1.1em; height:1.1em; margin-right:6px; color:var(--yellow); filter:drop-shadow(0 0 4px var(--yellow));"
+            viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg><strong>Copy-on-Write (CoW):</strong> Quando um container tenta modificar um arquivo das camadas de
+          leitura
+          da imagem, o Docker copia <em>apenas esse arquivo</em> para a camada R/W antes de editá-lo. As camadas
+          originais da imagem nunca são alteradas — por isso múltiplos containers podem compartilhar a mesma imagem sem
+          conflito.
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:1rem;">
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg></span>
+            <div>
+              <div class="pn">Imutável</div>
+              <div class="pt">Camadas da imagem nunca mudam após o build</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+              </svg></span>
+            <div>
+              <div class="pn">Compartilhada</div>
+              <div class="pt">100 containers podem usar 1 imagem. Zero duplicação.</div>
+            </div>
+          </div>
+          <div class="pack-item"><span class="pi"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg></span>
+            <div>
+              <div class="pn">Versionada por tag</div>
+              <div class="pt">meu-app:v1.0, meu-app:latest, meu-app:sha-a3f2b1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CONTAINER -->
+      <div class="ctab-panel" id="tab-container">
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+          Um container é a <strong style="color:var(--text)">instância ativa e isolada</strong> de uma imagem.
+          Sob o capô, ele é apenas um processo comum rodando diretamente no kernel host, mas blindado via
+          <strong style="color:var(--cyan)">Namespaces</strong> e com limites rígidos definidos por
+          <strong style="color:var(--cyan)">cgroups</strong> (as primitivas explicadas no primeiro slide). Você pode
+          instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada gravável
+          isolada.
+        </p>
+        <div class="container-lifecycle reveal">
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+              </svg></div>
+            <div class="ls-name">Created</div>
+            <div class="ls-cmd">docker create</div>
+            <div class="ls-desc">Container criado, ainda não iniciado. Camada R/W alocada.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg></div>
+            <div class="ls-name">Running</div>
+            <div class="ls-cmd">docker start / run</div>
+            <div class="ls-desc">Processo em execução. Consome CPU e memória do host.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="6" y="4" width="4" height="16" />
+                <rect x="14" y="4" width="4" height="16" />
+              </svg></div>
+            <div class="ls-name">Paused</div>
+            <div class="ls-cmd">docker pause</div>
+            <div class="ls-desc">Processos congelados via SIGSTOP. Memória preservada.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+              </svg></div>
+            <div class="ls-name">Stopped</div>
+            <div class="ls-cmd">docker stop</div>
+            <div class="ls-desc">SIGTERM → grace period → SIGKILL. Container parado mas existe.</div>
+          </div>
+          <div class="lc-state">
+            <div class="ls-icon"><svg class="retro-icon" viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg></div>
+            <div class="ls-name">Removed</div>
+            <div class="ls-cmd">docker rm</div>
+            <div class="ls-desc">Container deletado. Camada R/W destruída. Use volumes para persistir dados.</div>
+          </div>
+        </div>
+        <div class="compose-block" style="margin-top:1.5rem;">
+          <div class="compose-bar">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+            <span class="file-name">terminal — comandos essenciais</span>
+          </div>
+          <div class="compose-body" style="font-size:0.8rem;">
+            <span class="cy-com"># Criar e iniciar container (tudo em um)</span>
+            <span style="color:#79c0ff">$</span> docker run -d -p <span style="color:#ffa657">3000</span>:<span
+              style="color:#ffa657">3000</span> --name minha-api meu-app
+
+            <span class="cy-com"># Listar containers rodando</span>
+            <span style="color:#79c0ff">$</span> docker ps
+
+            <span class="cy-com"># Ver logs em tempo real</span>
+            <span style="color:#79c0ff">$</span> docker logs -f minha-api
+
+            <span class="cy-com"># Entrar no container (shell interativo)</span>
+            <span style="color:#79c0ff">$</span> docker exec -it minha-api sh
+
+            <span class="cy-com"># Inspecionar uso de recursos</span>
+            <span style="color:#79c0ff">$</span> docker stats minha-api
+
+            <span class="cy-com"># Parar e remover</span>
+            <span style="color:#79c0ff">$</span> docker stop minha-api <span class="cy-com">&amp;&amp;</span> docker rm
+            minha-api
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 3B: LINHA DO TEMPO ═══════════════ -->
+  <section id="linhadotempo">
+    <div class="section-wrapper" style="max-width: 1000px;">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">git log --reverse
+          --oneline history.git</span></p>
+      <h2 class="reveal">Linha do Tempo do <span class="text-cyan">Docker</span></h2>
+      <p class="section-desc reveal">Conheça a história e os marcos evolutivos que levaram um projeto interno de uma
+        startup francesa em 2013 a se tornar o alicerce absoluto de toda a nuvem moderna.</p>
+
+      <div class="reveal"
+        style="display: flex; flex-direction: column; gap: 2rem; position: relative; padding-left: 2rem; border-left: 2px solid var(--border); margin-top: 1.5rem; text-align: left; width: 100%;">
+
+        <div style="position: relative;">
+          <div
+            style="position: absolute; left: calc(-2rem - 6px); top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);">
+          </div>
+          <div style="font-weight: 800; color: var(--cyan); font-size: 1.1rem; margin-bottom: 0.25rem;">Março de 2013
+          </div>
+          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">Solomon Hykes apresenta o Docker como
+            projeto open-source na conferência <strong>PyCon</strong>. Inicialmente um componente interno da PaaS
+            francesa <strong>dotCloud</strong>.</div>
+        </div>
+
+        <div style="position: relative;">
+          <div
+            style="position: absolute; left: calc(-2rem - 6px); top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);">
+          </div>
+          <div style="font-weight: 800; color: var(--cyan); font-size: 1.1rem; margin-bottom: 0.25rem;">Junho de 2014
+          </div>
+          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">Lançamento oficial do <strong>Docker
+              1.0</strong>. A dotCloud muda oficialmente o seu nome corporativo para Docker Inc. e a adoção pela
+            comunidade de desenvolvimento de software explode globalmente.</div>
+        </div>
+
+        <div style="position: relative;">
+          <div
+            style="position: absolute; left: calc(-2rem - 6px); top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);">
+          </div>
+          <div style="font-weight: 800; color: var(--cyan); font-size: 1.1rem; margin-bottom: 0.25rem;">Junho de 2015
+          </div>
+          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">Criação da <strong>Open Container
+              Initiative (OCI)</strong> pelas principais líderes do mercado (Docker, Google, Red Hat, AWS, Microsoft),
+            com foco em padronizar as especificações de imagem e execução (runtime) do setor.</div>
+        </div>
+
+        <div style="position: relative;">
+          <div
+            style="position: absolute; left: calc(-2rem - 6px); top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan);">
+          </div>
+          <div style="font-weight: 800; color: var(--cyan); font-size: 1.1rem; margin-bottom: 0.25rem;">Hoje</div>
+          <div style="font-size: 0.9rem; color: var(--muted); line-height: 1.6;">Mais de <strong>14 bilhões</strong> de
+            downloads mensais de imagens realizados no Docker Hub. Tornou-se o pilar padrão do movimento DevOps e da
+            orquestração de microsserviços modernos.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 3C: ECOSSISTEMA ═══════════════ -->
+  <section id="ecossistema">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">docker system
+          info</span></p>
+      <h2 class="reveal">O Ecossistema <span class="text-cyan">Docker</span></h2>
+      <p class="section-desc reveal">Entenda como os principais blocos do ecossistema do Docker se articulam para
+        buildar, armazenar e rodar suas aplicações de forma orquestrada.</p>
+
+      <div class="slider-wrapper reveal">
+        <button class="slider-btn prev" onclick="moveSlider('ecossistema', -1)">←</button>
+        <div class="slider-track-container">
+          <div class="slider-track" id="slider-track-ecossistema">
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg></span>
+              <div class="en-title">Docker CLI</div>
+              <div class="en-sub">Interface de linha de comando. O que você digita no terminal. Envia comandos para o
+                Daemon via socket Unix.</div>
+              <div class="en-code"># O ponto de entrada para orquestrar:
+                $ docker system info
+                $ docker network ls
+                $ docker volume ls
+                $ docker compose up -d</div>
+            </div>
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="3" />
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg></span>
+              <div class="en-title">Docker Daemon (dockerd)</div>
+              <div class="en-sub">Processo em background que faz o trabalho pesado: gerencia imagens, containers, redes
+                e volumes. Usa containerd + runc internamente.</div>
+              <div class="en-code"># Socket de comunicação
+                /var/run/docker.sock
+
+                # Componentes internos
+                dockerd → containerd → runc</div>
+            </div>
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <line x1="3" y1="9" x2="21" y2="9" />
+                  <line x1="3" y1="15" x2="21" y2="15" />
+                  <line x1="10" y1="6" x2="14" y2="6" />
+                  <line x1="10" y1="12" x2="14" y2="12" />
+                  <line x1="10" y1="18" x2="14" y2="18" />
+                </svg></span>
+              <div class="en-title">Registry (Docker Hub)</div>
+              <div class="en-sub">Repositório de imagens. Pense no npm para pacotes, mas para imagens Docker. Pode ser
+                público ou privado.</div>
+              <div class="en-code"># Baixar imagem do Hub
+                $ docker pull nginx:alpine
+
+                # Enviar sua imagem
+                $ docker push user/meu-app:v1</div>
+            </div>
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path
+                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg></span>
+              <div class="en-title">Redes</div>
+              <div class="en-sub">Comunicação entre containers via bridge, host ou overlay networks.</div>
+              <div class="en-code"># Criar uma rede bridge customizada
+                $ docker network create app-net
+
+                # Iniciar container conectado à rede
+                $ docker run -d --net app-net --name web nginx
+
+                # Listar todas as redes no host
+                $ docker network ls</div>
+            </div>
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg></span>
+              <div class="en-title">Volumes</div>
+              <div class="en-sub">Persistência de dados além do ciclo de vida do container.</div>
+              <div class="en-code"># Criar volume nomeado persistente
+                $ docker volume create pg-data
+
+                # Montar volume no container (postgres)
+                $ docker run -d -v pg-data:/var/lib/postgresql/data postgres
+
+                # Inspecionar detalhes do volume
+                $ docker volume inspect pg-data</div>
+            </div>
+
+            <div class="eco-node highlighted">
+              <span class="en-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                </svg></span>
+              <div class="en-title">Docker Compose</div>
+              <div class="en-sub">Orquestra múltiplos containers com um único arquivo YAML.</div>
+              <div class="en-code"># Subir stack completa em background
+                $ docker compose up -d
+
+                # Visualizar status dos serviços compose
+                $ docker compose ps
+
+                # Derrubar stack e remover volumes
+                $ docker compose down -v</div>
+            </div>
+
+          </div>
+        </div>
+        <button class="slider-btn next" onclick="moveSlider('ecossistema', 1)">→</button>
+      </div>
+      <div class="slider-dots reveal" id="slider-dots-ecossistema"></div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 4: VANTAGENS ═══════════════ -->
+  <section id="vantagens">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">./list_benefits.sh
+          --dev --ops --team</span></p>
+      <h2 class="reveal">Vantagens no <span class="text-cyan">Desenvolvimento</span></h2>
+      <p class="section-desc reveal">Docker não é só uma ferramenta de deploy — transforma todo o ciclo de
+        desenvolvimento, do setup local ao CI/CD em produção.</p>
+
+      <div class="slider-wrapper reveal">
+        <button class="slider-btn prev" onclick="moveSlider('vantagens', -1)">←</button>
+        <div class="slider-track-container">
+          <div class="slider-track" id="slider-track-vantagens">
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path d="M17 1l4 4-4 4" />
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                  <path d="M7 23l-4-4 4-4" />
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg></span>
+              <div class="vc-title">Ambiente 100% Reproduzível</div>
+              <div class="vc-desc">Todo desenvolvedor do time roda exatamente o mesmo ambiente. Sem "funciona na minha
+                máquina". O Dockerfile é a fonte da verdade.</div>
+              <div class="vc-example"># Novo dev no time? Só isso:
+                $ git clone repo && docker compose up
+                # Ambiente idêntico em 2 minutos ✓</div>
+            </div>
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg></span>
+              <div class="vc-title">Isolamento de Dependências</div>
+              <div class="vc-desc">Projetos diferentes podem usar versões conflitantes da mesma tecnologia no mesmo
+                servidor, sem interferência.</div>
+              <div class="vc-example"># Projeto A — Node 16
+                docker run node:16 node -v
+
+                # Projeto B — Node 20 (mesmo host!)
+                docker run node:20 node -v</div>
+            </div>
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path
+                    d="M4.5 16.5c-1.5 1.25-2.5 3.5-2.5 3.5s2.25-1 3.5-2.5M12 2C8 2 4 6 4 10c0 2 1.5 3.5 3 4.5L12 12l2.5 5c1-1.5 2.5-3 4.5-3 4 0 8-4 8-8s-4-8-8-8z" />
+                  <line x1="9" y1="15" x2="15" y2="9" />
+                </svg></span>
+              <div class="vc-title">CI/CD Simplificado</div>
+              <div class="vc-desc">Build uma vez, execute em qualquer lugar. A imagem gerada no pipeline é exatamente a
+                mesma que vai para produção.</div>
+              <div class="vc-example"># Pipeline GitHub Actions
+                - name: Build e Push
+                run: |
+                docker build -t app:$SHA .
+                docker push app:$SHA
+                # Mesma imagem → staging → prod</div>
+            </div>
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg></span>
+              <div class="vc-title">Escalabilidade Horizontal</div>
+              <div class="vc-desc">Inicie dezenas de instâncias idênticas em segundos para lidar com picos de tráfego.
+                Cada container é stateless e substituível.</div>
+              <div class="vc-example"># Sobe 5 instâncias do serviço web
+                $ docker compose up --scale web=5
+
+                # Resultado:
+                web_1, web_2, web_3, web_4, web_5 ✓</div>
+            </div>
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg></span>
+              <div class="vc-title">Isolamento de Segurança</div>
+              <div class="vc-desc">Cada container opera em namespaces isolados. Uma vulnerabilidade em um serviço não
+                compromete automaticamente os outros.</div>
+              <div class="vc-example"># Limitar recursos do container
+                docker run \
+                --memory="512m" \
+                --cpus="0.5" \
+                --read-only \
+                meu-app</div>
+            </div>
+            <div class="vantagem-card">
+              <span class="vc-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                  <line x1="6" y1="3" x2="6" y2="15" />
+                  <circle cx="18" cy="6" r="3" />
+                  <circle cx="6" cy="18" r="3" />
+                  <path d="M18 9a9 9 0 0 1-9 9" />
+                </svg></span>
+              <div class="vc-title">Infraestrutura como Código</div>
+              <div class="vc-desc">Dockerfile e docker-compose.yml vivem no repositório junto com o código.
+                Infraestrutura versionada, revisada e auditável.</div>
+              <div class="vc-example"># Tudo no git
+                git log --oneline
+                a3f2b1c fix: atualiza Node 20→22
+                7d9e4f0 feat: adiciona serviço Redis
+                2c8a1b3 chore: reduz imagem (multi-stage)</div>
+            </div>
+          </div>
+        </div>
+        <button class="slider-btn next" onclick="moveSlider('vantagens', 1)">→</button>
+      </div>
+
+      <div class="slider-dots reveal" id="slider-dots-vantagens"></div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ SLIDE 4B: EXEMPLO REAL DOCKER COMPOSE ═══════════════ -->
+  <section id="exemplocompose">
+    <div class="section-wrapper" style="max-width: 1100px;">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">cat
+          docker-compose.yml</span></p>
+      <h2 class="reveal">Exemplo Real com <span class="text-cyan">Compose</span></h2>
+      <p class="section-desc reveal" style="margin-bottom: 2rem;">Veja como descrever e subir toda a sua stack local
+        (Aplicação, Banco e Cache) com persistência de volumes e redes isoladas usando um único arquivo YAML.</p>
+
+      <div class="compose-block reveal"
+        style="max-width: 1000px; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        <div class="compose-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span class="file-name">docker-compose.yml</span>
+        </div>
+        <div class="compose-body"
+          style="white-space: pre; font-size: 0.88rem; line-height: 1.7; overflow-x: auto; background: #090d16; border-radius: 0 0 12px 12px; max-height: 480px; overflow-y: auto;">
+          <span class="cy-com"># Sobe toda a stack com: docker compose up -d</span>
+          <span class="cy-key">services</span>:
+
+          <span class="cy-key">web</span>: <span class="cy-com"># Serviço da aplicação Node.js</span>
+          <span class="cy-key">build</span>: <span class="cy-str">.</span>
+          <span class="cy-key">ports</span>:
+          - <span class="cy-str">"3000:3000"</span>
+          <span class="cy-key">environment</span>:
+          <span class="cy-key">DATABASE_URL</span>: <span class="cy-str">"postgres://db:5432/app"</span>
+          <span class="cy-key">REDIS_URL</span>: <span class="cy-str">"redis://cache:6379"</span>
+          <span class="cy-key">depends_on</span>:
+          - <span class="cy-str">db</span>
+          - <span class="cy-str">cache</span>
+
+          <span class="cy-key">db</span>: <span class="cy-com"># Serviço do Banco PostgreSQL</span>
+          <span class="cy-key">image</span>: <span class="cy-img">postgres:16-alpine</span>
+          <span class="cy-key">volumes</span>:
+          - <span class="cy-str">pgdata:/var/lib/postgresql/data</span>
+          <span class="cy-key">environment</span>:
+          <span class="cy-key">POSTGRES_DB</span>: <span class="cy-str">app</span>
+
+          <span class="cy-key">cache</span>: <span class="cy-com"># Serviço de Cache Redis</span>
+          <span class="cy-key">image</span>: <span class="cy-img">redis:7-alpine</span>
+
+          <span class="cy-key">volumes</span>:
+          <span class="cy-key">pgdata</span>: <span class="cy-com"># Volume nomeado persistente</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ LABORATÓRIO ═══════════════ -->
+  <section id="lab">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">run_lab
+          --interactive</span></p>
+      <h2 class="reveal">Laboratório <span class="text-green">Terminal</span></h2>
+      <p class="section-desc reveal">Simule comandos Docker reais. Clique nos botões abaixo para ver o que acontece em
+        cada etapa do fluxo.</p>
+
+      <div class="terminal-container reveal">
+        <div class="terminal-bar">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+          <span class="terminal-title">docker-lab — bash</span>
+        </div>
+        <div class="terminal-body" id="termBody">
+          <div><span class="t-prompt">user@docker:~$</span> <span class="cursor"></span></div>
+        </div>
+      </div>
+
+      <div class="lab-controls reveal">
+        <button class="lab-btn" onclick="runCmd('pull')" id="btn-pull">docker pull nginx</button>
+        <button class="lab-btn" onclick="runCmd('run')" id="btn-run">docker run -d -p 8080:80 nginx</button>
+        <button class="lab-btn" onclick="runCmd('ps')" id="btn-ps">docker ps</button>
+        <button class="lab-btn" onclick="runCmd('build')" id="btn-build">docker build -t meu-app .</button>
+        <button class="lab-btn" onclick="runCmd('stop')" id="btn-stop">docker stop 7f3c91a4b2e1</button>
+        <button class="lab-btn" onclick="runCmd('clear')" style="color:var(--muted);">clear</button>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════ DESAFIO ═══════════════ -->
+  <section id="challenge">
+    <div class="section-wrapper">
+      <p class="section-tag reveal"><span class="prompt">guest@docker:~$</span> <span class="cmd">curl -s
+          https://harlem888.github.io/Docker-game/ | bash</span></p>
+      <h2 class="reveal">O Desafio do <span class="text-yellow">Arquiteto</span> <svg class="retro-icon"
+          style="width:1.1em; height:1.1em; margin-left:6px; color:var(--yellow); filter:drop-shadow(0 0 4px var(--yellow));"
+          viewBox="0 0 24 24">
+          <path
+            d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
+        </svg></h2>
+      <p class="section-desc reveal">Você está pronto para o teste real? O simulador local foi apenas o aquecimento.
+        Clique no botão abaixo para iniciar o Docker Game oficial e testar suas habilidades ao limite!</p>
+
+      <div class="quiz-card reveal" style="text-align: center; max-width: 600px; margin: 0 auto; padding: 3rem 2rem;">
+        <span
+          style="font-size: 4rem; display: block; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite;">🎮</span>
+        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text);">DOCKER GAME [LEVEL 99]
+        </h3>
+        <p style="color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem;">
+          Um labirinto interativo de desafios Docker projetado para testar seus conhecimentos técnicos ao limite sob
+          pressão de bugs e ambientes reais.
+        </p>
+        <a href="https://harlem888.github.io/Docker-game/" target="_blank" class="btn btn-primary"
+          style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 1rem; padding: 1rem 2.5rem; text-decoration: none;">
+          <svg class="retro-icon" style="width: 1.2em; height: 1.2em; color: #000; filter: none; stroke-width: 2.5;"
+            viewBox="0 0 24 24">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          INICIAR DESAFIO EXTERNO
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Feito com <svg class="retro-icon cyan-phosphor"
+        style="width:1.1em; height:1.1em; vertical-align:middle; margin-top:-2px; margin-right:4px;"
+        viewBox="0 0 24 24">
+        <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+        <line x1="6" y1="5" x2="6" y2="19" />
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="18" y1="5" x2="18" y2="19" />
+      </svg> para aprender Docker de verdade · <span>docker.learn</span></p>
+  </footer>
+
+  <script>
+    /* ─────────────────────────────────────────
+       PARTICLES
+    ───────────────────────────────────────── */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, pts = [];
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    function initPts() {
+      pts = [];
+      for (let i = 0; i < 60; i++) pts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5, o: Math.random() * 0.4 + 0.1
+      });
+    }
+    function drawPts() {
+      ctx.clearRect(0, 0, W, H);
+      pts.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,212,255,${p.o})`; ctx.fill();
+      });
+      pts.forEach((a, i) => pts.slice(i + 1).forEach(b => {
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < 120) {
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(0,212,255,${0.08 * (1 - d / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+        }
+      }));
+      requestAnimationFrame(drawPts);
+    }
+    resize(); initPts(); drawPts();
+    window.addEventListener('resize', () => { resize(); initPts(); });
+
+    /* ─────────────────────────────────────────
+       CARD SLIDER SYSTEM (JS)
+    ───────────────────────────────────────── */
+    const sliders = {
+      conteinerizacao: { currentIdx: 0, total: 6 },
+      vantagens: { currentIdx: 0, total: 6 },
+      ecossistema: { currentIdx: 0, total: 6 }
+    };
+
+    function getVisibleCards(sectionId) {
+      const width = window.innerWidth;
+      if (width <= 768) return 1;
+      if (width <= 1024) return 2;
+      return 3;
+    }
+
+    function updateSlider(sectionId) {
+      const track = document.getElementById(`slider-track-${sectionId}`);
+      if (!track) return;
+
+      const visible = getVisibleCards(sectionId);
+      const maxIdx = Math.max(0, sliders[sectionId].total - visible);
+
+      // Clamp index
+      if (sliders[sectionId].currentIdx > maxIdx) {
+        sliders[sectionId].currentIdx = maxIdx;
+      }
+
+      const cardWidth = track.firstElementChild ? track.firstElementChild.offsetWidth : 0;
+      const gap = 24; // 1.5rem = 24px
+
+      const offset = sliders[sectionId].currentIdx * (cardWidth + gap);
+      track.style.transform = `translateX(-${offset}px)`;
+
+      // Update buttons
+      const prevBtn = document.querySelector(`#${sectionId} .slider-btn.prev`);
+      const nextBtn = document.querySelector(`#${sectionId} .slider-btn.next`);
+      if (prevBtn) prevBtn.disabled = sliders[sectionId].currentIdx === 0;
+      if (nextBtn) nextBtn.disabled = sliders[sectionId].currentIdx >= maxIdx;
+
+      // Update dots
+      const dotsContainer = document.getElementById(`slider-dots-${sectionId}`);
+      if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        const numDots = sliders[sectionId].total - visible + 1;
+        if (numDots > 1) {
+          for (let i = 0; i < numDots; i++) {
+            const dot = document.createElement('div');
+            dot.className = `slider-dot${i === sliders[sectionId].currentIdx ? ' active' : ''}`;
+            const idx = i;
+            dot.onclick = () => {
+              sliders[sectionId].currentIdx = idx;
+              updateSlider(sectionId);
+            };
+            dotsContainer.appendChild(dot);
+          }
+        }
+      }
+    }
+
+    function moveSlider(sectionId, dir) {
+      const visible = getVisibleCards(sectionId);
+      const maxIdx = Math.max(0, sliders[sectionId].total - visible);
+
+      sliders[sectionId].currentIdx += dir;
+      if (sliders[sectionId].currentIdx < 0) sliders[sectionId].currentIdx = 0;
+      if (sliders[sectionId].currentIdx > maxIdx) sliders[sectionId].currentIdx = maxIdx;
+
+      updateSlider(sectionId);
+    }
+
+    window.addEventListener('resize', () => {
+      updateSlider('conteinerizacao');
+      updateSlider('vantagens');
+      updateSlider('ecossistema');
+    });
+
+    /* ─────────────────────────────────────────
+       SLIDE-DECK Presentation Engine (SPA)
+    ───────────────────────────────────────── */
+    const SECTIONS = ['hero', 'conteinerizacao', 'vmvscontainer', 'oquedocker', 'conceitos', 'linhadotempo', 'ecossistema', 'vantagens', 'exemplocompose', 'lab', 'challenge'];
+    let activeSectionIndex = 0;
+    let isTransitioning = false;
+
+    // Helper for sleep delays
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    // Update watermark slide deck progress bar
+    function updateProgressBar() {
+      const pct = (activeSectionIndex / (SECTIONS.length - 1)) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+    }
+
+    // Buttery smooth section cross-fade transition trigger
+    async function transitionToSection(targetIndex) {
+      if (isTransitioning || targetIndex < 0 || targetIndex >= SECTIONS.length) return;
+      isTransitioning = true;
+
+      const currentId = SECTIONS[activeSectionIndex];
+      const targetId = SECTIONS[targetIndex];
+
+      const currentSec = document.getElementById(currentId);
+      const targetSec = document.getElementById(targetId);
+
+      // Trigger standard CSS reveal animations immediately in target slide
+      targetSec.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+
+      // Perform a seamless cross-fade by swapping z-index and opacity classes
+      currentSec.classList.remove('active-section');
+      targetSec.classList.add('active-section');
+
+      activeSectionIndex = targetIndex;
+      updateProgressBar();
+
+      // Reset scroll position inside the target slide viewport
+      targetSec.scrollTop = 0;
+
+      // Update slider tracks if entering a slider-enabled section
+      if (targetId === 'conteinerizacao' || targetId === 'vantagens' || targetId === 'ecossistema') {
+        updateSlider(targetId);
+      }
+
+      // Wait for the 400ms transition to complete smoothly
+      await sleep(400);
+
+      isTransitioning = false;
+    }
+
+    // Initialize slide active classes and reveal first slide elements
+    function initSections() {
+      SECTIONS.forEach((id, index) => {
+        const sec = document.getElementById(id);
+        if (sec) {
+          if (index === 0) {
+            sec.classList.add('active-section');
+            sec.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+          } else {
+            sec.classList.remove('active-section');
+          }
+        }
+      });
+      updateProgressBar();
+    }
+    initSections();
+
+    // Global Link Clicks Interceptor (Menus, CTAs)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-primary') ||
+        e.target.closest('.btn-outline') ||
+        e.target.closest('.nav-links a');
+      if (!btn) return;
+
+      const href = btn.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const targetId = href.substring(1);
+        const targetIdx = SECTIONS.indexOf(targetId);
+        if (targetIdx !== -1) {
+          transitionToSection(targetIdx);
+        }
+      }
+    });
+
+    // Keyboard Enter trigger
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (activeTag === 'input' || activeTag === 'textarea' || document.activeElement.closest('.quiz-opt') || document.activeElement.closest('.lab-btn')) return;
+
+        if (!isTransitioning && activeSectionIndex < SECTIONS.length - 1) {
+          transitionToSection(activeSectionIndex + 1);
+        }
+      }
+    });
+
+    // Scroll wheel trigger with smart inner bounds checks
+    window.addEventListener('wheel', (e) => {
+      if (isTransitioning) return;
+      if (Math.abs(e.deltaY) < 30) return;
+
+      const activeSec = document.getElementById(SECTIONS[activeSectionIndex]);
+      if (!activeSec) return;
+
+      // Smart check if user is at the scroll limits of the current section viewport
+      const isAtBottom = activeSec.scrollHeight - activeSec.scrollTop <= activeSec.clientHeight + 12;
+      const isAtTop = activeSec.scrollTop <= 5;
+
+      if (e.deltaY > 0) {
+        if (isAtBottom && activeSectionIndex < SECTIONS.length - 1) {
+          transitionToSection(activeSectionIndex + 1);
+        }
+      } else {
+        if (isAtTop && activeSectionIndex > 0) {
+          transitionToSection(activeSectionIndex - 1);
+        }
+      }
+    }, { passive: true });
+
+    // Touch Swipe trigger with inner boundary checking for mobile devices
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (isTransitioning) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffY = touchStartY - touchEndY;
+      if (Math.abs(diffY) < 55) return;
+
+      const activeSec = document.getElementById(SECTIONS[activeSectionIndex]);
+      if (!activeSec) return;
+
+      const isAtBottom = activeSec.scrollHeight - activeSec.scrollTop <= activeSec.clientHeight + 12;
+      const isAtTop = activeSec.scrollTop <= 5;
+
+      if (diffY > 0) {
+        if (isAtBottom && activeSectionIndex < SECTIONS.length - 1) {
+          transitionToSection(activeSectionIndex + 1);
+        }
+      } else {
+        if (isAtTop && activeSectionIndex > 0) {
+          transitionToSection(activeSectionIndex - 1);
+        }
+      }
+    }, { passive: true });
+
+    /* ─────────────────────────────────────────
+       CONCEPTS TABS (slide 5)
+    ───────────────────────────────────────── */
+    function switchTab(name) {
+      document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.ctab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      // activate the button whose onclick contains the name
+      document.querySelectorAll('.ctab').forEach(t => {
+        if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + name + "'")) {
+          t.classList.add('active');
+        }
+      });
+    }
+
+    /* ─────────────────────────────────────────
+       DOCKERFILE ANNOTATIONS (slide 5 tab 1)
+    ───────────────────────────────────────── */
+    const DF_ANNOTATIONS = [
+      null, // line 0: comment
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <strong>FROM</strong> — Define a imagem base. Aqui usamos <code>node:20-alpine</code>: Node.js versão 20 sobre Alpine Linux (~7 MB). Sempre especifique uma versão exata para builds reproduzíveis.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> <strong>WORKDIR</strong> — Cria e define o diretório de trabalho dentro do container. Todos os comandos seguintes (COPY, RUN) serão executados a partir de <code>/app</code>.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> <strong>COPY package*.json ./</strong> — Copia <em>apenas</em> os arquivos de dependências primeiro. Isso é uma otimização de cache: se o código mudou mas o package.json não, o Docker reutiliza a camada do npm install.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> <strong>RUN npm ci</strong> — Executa um comando durante o build. <code>npm ci</code> instala dependências de forma determinística a partir do package-lock.json. Cada RUN cria uma nova camada na imagem.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> <strong>COPY . .</strong> — Copia o restante do código fonte para o container. Feito <em>depois</em> do npm install para aproveitar cache: mudanças no código não reexecutam a instalação de dependências.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> <strong>EXPOSE</strong> — Documenta qual porta o container escuta. Não abre a porta — é apenas metadado. A abertura real acontece com <code>-p 3000:3000</code> no <code>docker run</code>.',
+      '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> <strong>CMD</strong> — Define o comando padrão executado quando o container inicia. Em formato JSON array (exec form), evita shell intermediário. Pode ser sobrescrito no <code>docker run</code>.',
+    ];
+
+    function annotate(idx) {
+      const ann = document.getElementById('df-ann');
+      const lines = document.querySelectorAll('.df-line');
+      lines.forEach((l, i) => l.classList.toggle('highlighted', i === idx));
+      if (DF_ANNOTATIONS[idx]) {
+        ann.innerHTML = '<svg class="retro-icon" style="width:1.1em; height:1.1em; margin-right:6px; color:var(--cyan); filter:drop-shadow(0 0 4px var(--cyan));" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' + DF_ANNOTATIONS[idx];
+        ann.classList.add('show');
+      } else {
+        ann.classList.remove('show');
+      }
+    }
+
+    /* ─────────────────────────────────────────
+       LEGACY — kept for compatibility
+    ───────────────────────────────────────── */
+    function selectStep(n) { } // no-op, section removed
+
+    /* ─────────────────────────────────────────
+       TERMINAL LAB
+    ───────────────────────────────────────── */
+    let termRunning = false;
+
+    const COMMANDS = {
+      pull: {
+        cmd: 'docker pull nginx',
+        lines: [
+          { t: 'info', text: 'Using default tag: latest' },
+          { t: 'output', text: 'latest: Pulling from library/nginx' },
+          { t: 'output', text: 'a1d0c7532777: Pull complete' },
+          { t: 'output', text: 'e9cc4f423744: Pull complete' },
+          { t: 'output', text: 'b5f9abb23e6c: Pull complete' },
+          { t: 'success', text: 'Digest: sha256:32da30332506740a2f7c34d5dc70467b7f14ec67' },
+          { t: 'success', text: 'Status: Downloaded newer image for nginx:latest' },
+          { t: 'info', text: 'docker.io/library/nginx:latest' },
+        ]
+      },
+      run: {
+        cmd: 'docker run -d -p 8080:80 nginx',
+        lines: [
+          { t: 'info', text: 'Unable to find image "nginx:latest" locally? No — já temos!' },
+          { t: 'output', text: 'Creating container from nginx:latest...' },
+          { t: 'success', text: '7f3c91a4b2e1d9f8c3a5b7e2f4d6a8c1b3e5f7 ✓' },
+          { t: 'success', text: 'Container started! ✓' },
+          { t: 'info', text: 'Nginx disponível em → http://localhost:8080' },
+        ]
+      },
+      ps: {
+        cmd: 'docker ps',
+        lines: [
+          { t: 'output', text: 'CONTAINER ID   IMAGE     COMMAND                  STATUS' },
+          { t: 'output', text: '─────────────────────────────────────────────────────────' },
+          { t: 'success', text: '7f3c91a4b2e1   nginx     "/docker-entrypoint.…"   Up 2 minutes' },
+          { t: 'info', text: '' },
+          { t: 'info', text: '1 container(s) em execução ✓' },
+        ]
+      },
+      build: {
+        cmd: 'docker build -t meu-app .',
+        lines: [
+          { t: 'output', text: '[+] Building 12.3s (8/8) DONE' },
+          { t: 'output', text: ' => [internal] load build definition from Dockerfile' },
+          { t: 'output', text: ' => [1/5] FROM docker.io/library/node:18' },
+          { t: 'output', text: ' => [2/5] WORKDIR /app' },
+          { t: 'output', text: ' => [3/5] COPY . .' },
+          { t: 'output', text: ' => [4/5] RUN npm install' },
+          { t: 'output', text: ' => [5/5] CMD ["npm", "start"]' },
+          { t: 'success', text: ' => exporting to image ✓' },
+          { t: 'success', text: 'Successfully built 4a8f9b2c1d3e ✓' },
+          { t: 'success', text: 'Successfully tagged meu-app:latest' },
+        ]
+      },
+      stop: {
+        cmd: 'docker stop 7f3c91a4b2e1',
+        lines: [
+          { t: 'warning', text: 'Enviando sinal SIGTERM para o container...' },
+          { t: 'output', text: '7f3c91a4b2e1' },
+          { t: 'success', text: 'Container stopped ✓' },
+          { t: 'info', text: 'Use "docker start 7f3c91a4" para reiniciar.' },
+        ]
+      }
+    };
+
+    async function runCmd(key) {
+      if (termRunning && key !== 'clear') return;
+      const body = document.getElementById('termBody');
+
+      if (key === 'clear') {
+        body.innerHTML = '<div><span class="t-prompt">user@docker:~$</span> <span class="cursor"></span></div>';
+        return;
+      }
+
+      const def = COMMANDS[key];
+      termRunning = true;
+
+      // Remove cursor line
+      const last = body.lastElementChild;
+      if (last && last.querySelector('.cursor')) body.removeChild(last);
+
+      // Print command
+      const cmdLine = document.createElement('div');
+      cmdLine.innerHTML = `<span class="t-prompt">user@docker:~$</span> <span class="t-cmd">${def.cmd}</span>`;
+      body.appendChild(cmdLine);
+      body.scrollTop = body.scrollHeight;
+
+      // Print output lines with delay
+      for (const l of def.lines) {
+        await sleep(200 + Math.random() * 200);
+        const line = document.createElement('div');
+        line.className = 't-' + l.t;
+        line.textContent = l.text;
+        line.style.opacity = '0'; line.style.transform = 'translateY(4px)';
+        line.style.transition = 'all 0.15s';
+        body.appendChild(line);
+        body.scrollTop = body.scrollHeight;
+        await sleep(20);
+        line.style.opacity = '1'; line.style.transform = 'translateY(0)';
+      }
+
+      // Restore prompt
+      await sleep(300);
+      const newPrompt = document.createElement('div');
+      newPrompt.innerHTML = '<span class="t-prompt">user@docker:~$</span> <span class="cursor"></span>';
+      body.appendChild(newPrompt);
+      body.scrollTop = body.scrollHeight;
+      termRunning = false;
+    }
+
+    // Helper sleep is already defined in the slide-deck engine above
+
+    /* ─────────────────────────────────────────
+       CHALLENGE — Moved to external Docker Game
+    ───────────────────────────────────────── */
+  </script>
+</body>
+
+</html>
