@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2691,9 +2692,12 @@
       <!-- TAB: IMAGEM -->
       <div class="ctab-panel" id="tab-imagem">
         <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
-          Enquanto o Dockerfile é a receita de construção, a <strong style="color:var(--text)">Imagem é o pacote imutável compilado</strong>.
-          Ela materializa na prática o conceito de <strong style="color:var(--cyan)">camadas sobrepostas do UnionFS</strong> apresentadas no início. Cada
-          instrução do Dockerfile gera uma camada de leitura estática (Read-Only) identificada por um hash único. A camada temporária gravável
+          Enquanto o Dockerfile é a receita de construção, a <strong style="color:var(--text)">Imagem é o pacote
+            imutável compilado</strong>.
+          Ela materializa na prática o conceito de <strong style="color:var(--cyan)">camadas sobrepostas do
+            UnionFS</strong> apresentadas no início. Cada
+          instrução do Dockerfile gera uma camada de leitura estática (Read-Only) identificada por um hash único. A
+          camada temporária gravável
           (Read-Write) só é criada quando o container é de fato executado.
         </p>
         <div class="layers-visual">
@@ -2774,7 +2778,9 @@
           Um container é a <strong style="color:var(--text)">instância ativa e isolada</strong> de uma imagem.
           Sob o capô, ele é apenas um processo comum rodando diretamente no kernel host, mas blindado via
           <strong style="color:var(--cyan)">Namespaces</strong> e com limites rígidos definidos por
-          <strong style="color:var(--cyan)">cgroups</strong> (as primitivas explicadas no primeiro slide). Você pode instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada gravável isolada.
+          <strong style="color:var(--cyan)">cgroups</strong> (as primitivas explicadas no primeiro slide). Você pode
+          instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada gravável
+          isolada.
         </p>
         <div class="container-lifecycle reveal">
           <div class="lc-state">
@@ -3263,16 +3269,22 @@
           <path
             d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 0-4 4v5a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
         </svg></h2>
-      <p class="section-desc reveal">Você está pronto para o teste real? O simulador local foi apenas o aquecimento. Clique no botão abaixo para iniciar o Docker Game oficial e testar suas habilidades ao limite!</p>
+      <p class="section-desc reveal">Você está pronto para o teste real? O simulador local foi apenas o aquecimento.
+        Clique no botão abaixo para iniciar o Docker Game oficial e testar suas habilidades ao limite!</p>
 
       <div class="quiz-card reveal" style="text-align: center; max-width: 600px; margin: 0 auto; padding: 3rem 2rem;">
-        <span style="font-size: 4rem; display: block; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite;">🎮</span>
-        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text);">DOCKER GAME [LEVEL 99]</h3>
+        <span
+          style="font-size: 4rem; display: block; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite;">🎮</span>
+        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--text);">DOCKER GAME [LEVEL 99]
+        </h3>
         <p style="color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem;">
-          Um labirinto interativo de desafios Docker projetado para testar seus conhecimentos técnicos ao limite sob pressão de bugs e ambientes reais.
+          Um labirinto interativo de desafios Docker projetado para testar seus conhecimentos técnicos ao limite sob
+          pressão de bugs e ambientes reais.
         </p>
-        <a href="https://harlem888.github.io/Docker-game/" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 1rem; padding: 1rem 2.5rem; text-decoration: none;">
-          <svg class="retro-icon" style="width: 1.2em; height: 1.2em; color: #000; filter: none; stroke-width: 2.5;" viewBox="0 0 24 24">
+        <a href="https://harlem888.github.io/Docker-game/" target="_blank" class="btn btn-primary"
+          style="display: inline-flex; align-items: center; gap: 0.75rem; font-size: 1rem; padding: 1rem 2.5rem; text-decoration: none;">
+          <svg class="retro-icon" style="width: 1.2em; height: 1.2em; color: #000; filter: none; stroke-width: 2.5;"
+            viewBox="0 0 24 24">
             <polygon points="5 3 19 12 5 21 5 3" />
           </svg>
           INICIAR DESAFIO EXTERNO
