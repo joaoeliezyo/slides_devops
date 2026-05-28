@@ -19,7 +19,7 @@
     <div class="progress-bar" id="progressBar"></div>
 
     <nav>
-        <div class="nav-logo">docker<span>.learn</span></div>
+        <a href="#hero" class="nav-logo">docker<span>.learn</span></a>
         <div class="nav-links">
             <a href="#conteinerizacao">Contêineres</a>
             <a href="#vmvscontainer">VM vs Container</a>
@@ -351,6 +351,16 @@
                         <line x1="12" y1="5" x2="12" y2="19" />
                         <line x1="18" y1="5" x2="18" y2="19" />
                     </svg>Container</button>
+                <button class="ctab" onclick="switchTab('status')"><svg class="retro-icon"
+                        style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>Status</button>
+                <button class="ctab" onclick="switchTab('comandos')"><svg class="retro-icon"
+                        style="width:1.1em; height:1.1em; margin-right:6px;" viewBox="0 0 24 24">
+                        <polyline points="4 17 10 11 4 5" />
+                        <line x1="12" y1="19" x2="20" y2="19" />
+                    </svg>Comandos</button>
             </div>
 
             <!-- TAB: DOCKERFILE -->
@@ -533,10 +543,40 @@
                     Sob o capô, ele é apenas um processo comum rodando diretamente no kernel host, mas blindado via
                     <strong style="color:var(--cyan)">Namespaces</strong> e com limites rígidos definidos por
                     <strong style="color:var(--cyan)">cgroups</strong> (as primitivas explicadas no primeiro slide).
-                    Você pode
-                    instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada
-                    gravável
-                    isolada.
+                    Você pode instanciar dezenas de containers a partir da mesma imagem, pois cada um possui sua própria camada
+                    gravável isolada.
+                </p>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-top:1.5rem;">
+                    <div class="card" style="padding: 1.5rem; min-height: unset;">
+                        <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                        </svg></span>
+                        <h4 class="card-title" style="font-size: 1rem; margin-bottom: 0.5rem;">Leveza Absoluta</h4>
+                        <p class="card-desc" style="font-size: 0.82rem; line-height: 1.5;">Diferente de VMs, containers não carregam um sistema operacional completo. Eles compartilham o Kernel do sistema host, resultando em inicialização sub-segundo e uso mínimo de memória e CPU.</p>
+                    </div>
+                    <div class="card" style="padding: 1.5rem; min-height: unset;">
+                        <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        </svg></span>
+                        <h4 class="card-title" style="font-size: 1rem; margin-bottom: 0.5rem;">Isolamento de Processos</h4>
+                        <p class="card-desc" style="font-size: 0.82rem; line-height: 1.5;">O container opera em seu próprio espaço de rede, arquivos e processos. Um processo rodando no container não consegue ver ou interferir com outros processos do host ou de outros containers.</p>
+                    </div>
+                    <div class="card" style="padding: 1.5rem; min-height: unset;">
+                        <span class="card-icon"><svg class="retro-icon cyan-phosphor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg></span>
+                        <h4 class="card-title" style="font-size: 1rem; margin-bottom: 0.5rem;">Portabilidade Universal</h4>
+                        <p class="card-desc" style="font-size: 0.82rem; line-height: 1.5;">Como todas as bibliotecas e binários necessários rodam encapsulados no container, o comportamento da aplicação é idêntico em qualquer máquina Linux, macOS ou Windows que suporte Docker.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: STATUS -->
+            <div class="ctab-panel" id="tab-status">
+                <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+                    O container possui um <strong style="color:var(--text)">ciclo de vida estruturado</strong> gerenciado pela API do Docker Daemon. Cada comando altera o estado do processo principal do container. Explore os 5 status principais abaixo:
                 </p>
                 <div class="container-lifecycle reveal">
                     <div class="lc-state">
@@ -587,35 +627,49 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- TAB: COMANDOS -->
+            <div class="ctab-panel" id="tab-comandos">
+                <p style="color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; line-height:1.7;">
+                    Estes são os <strong style="color:var(--text)">comandos CLI essenciais</strong> para orquestrar o ciclo de vida e a inspeção de containers no seu dia a dia. Leia os comentários explicativos acima de cada comando para compreender seu funcionamento.
+                </p>
                 <div class="compose-block" style="margin-top:1.5rem;">
                     <div class="compose-bar">
                         <div class="dot dot-red"></div>
                         <div class="dot dot-yellow"></div>
                         <div class="dot dot-green"></div>
-                        <span class="file-name">terminal — comandos essenciais</span>
+                        <span class="file-name">terminal — comandos essenciais comentados</span>
                     </div>
-                    <div class="compose-body" style="font-size:0.8rem;">
-                        <span class="cy-com"># Criar e iniciar container (tudo em um)</span>
+                    <div class="compose-body" style="font-size:0.8rem; line-height:2.0;">
+                        <span class="cy-com"># docker run: Cria e inicia um novo container a partir de uma imagem.
+# -d: Roda em modo background ('detached'), liberando o terminal.
+# -p 3000:3000: Mapeia a porta 3000 do host para a porta 3000 interna do container.
+# --name minha-api: Dá um nome amigável e único para identificação do container.</span>
                         <span style="color:#79c0ff">$</span> docker run -d -p <span
-                            style="color:#ffa657">3000</span>:<span style="color:#ffa657">3000</span> --name minha-api
-                        meu-app
+                            style="color:#ffa657">3000</span>:<span style="color:#ffa657">3000</span> --name minha-api meu-app
 
-                        <span class="cy-com"># Listar containers rodando</span>
+                        <span class="cy-com"># docker ps: Lista todos os containers ativos no momento.
+# Dica: Adicione o parâmetro '-a' (docker ps -a) para exibir também os containers inativos/parados.</span>
                         <span style="color:#79c0ff">$</span> docker ps
 
-                        <span class="cy-com"># Ver logs em tempo real</span>
+                        <span class="cy-com"># docker logs: Exibe a saída padrão de log (console.log / logs da aplicação).
+# -f: Modo 'follow' (acompanha e atualiza as novas linhas em tempo real no console).</span>
                         <span style="color:#79c0ff">$</span> docker logs -f minha-api
 
-                        <span class="cy-com"># Entrar no container (shell interativo)</span>
+                        <span class="cy-com"># docker exec: Executa um comando específico dentro de um container que já está ativo.
+# -it: Roda em modo interativo atrelando um pseudo-TTY (essencial para shells interativos).
+# sh: Abre o shell simplificado Alpine Linux (ou use 'bash' se estiver disponível na imagem).</span>
                         <span style="color:#79c0ff">$</span> docker exec -it minha-api sh
 
-                        <span class="cy-com"># Inspecionar uso de recursos</span>
+                        <span class="cy-com"># docker stats: Exibe uma transmissão ao vivo com consumo de recursos de hardware.
+# Mostra porcentagem de CPU, memória utilizada, limites, tráfego de rede e I/O de disco.</span>
                         <span style="color:#79c0ff">$</span> docker stats minha-api
 
-                        <span class="cy-com"># Parar e remover</span>
+                        <span class="cy-com"># docker stop: Envia um sinal amigável SIGTERM e, após um tempo limite, SIGKILL para desligar o container.
+# docker rm: Deleta o container do disco e exclui sua camada temporária gravável (Read-Write).</span>
                         <span style="color:#79c0ff">$</span> docker stop minha-api <span
-                            class="cy-com">&amp;&amp;</span> docker rm
-                        minha-api
+                            class="cy-com">&amp;&amp;</span> docker rm minha-api
                     </div>
                 </div>
             </div>
@@ -1227,7 +1281,8 @@
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.btn-primary') ||
                 e.target.closest('.btn-outline') ||
-                e.target.closest('.nav-links a');
+                e.target.closest('.nav-links a') ||
+                e.target.closest('.nav-logo');
             if (!btn) return;
 
             const href = btn.getAttribute('href');

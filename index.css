@@ -80,6 +80,7 @@
             font-weight: 800;
             color: var(--cyan);
             letter-spacing: -0.02em;
+            text-decoration: none;
         }
 
         .nav-logo span {
@@ -1987,6 +1988,7 @@
         /* ── SLIDE: CONCEITOS BÁSICOS ── */
         .concepts-tabs {
             display: flex;
+            flex-wrap: wrap;
             gap: 0;
             margin-bottom: 0;
             border-bottom: 1px solid var(--border);
